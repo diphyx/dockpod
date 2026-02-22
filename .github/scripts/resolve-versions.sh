@@ -19,6 +19,7 @@ get_file_content() {
 echo "==> Fetching latest release tags..."
 
 DOCKER_VERSION=$(get_latest_tag "moby/moby")
+DOCKER_VERSION="${DOCKER_VERSION#docker-}"
 PODMAN_VERSION=$(get_latest_tag "containers/podman")
 COMPOSE_VERSION=$(get_latest_tag "docker/compose")
 
@@ -30,7 +31,7 @@ echo "  Compose: ${COMPOSE_VERSION}"
 
 echo "==> Deriving Docker dependency versions..."
 
-MOBY_DOCKERFILE=$(get_file_content "moby/moby" "${DOCKER_VERSION}" "Dockerfile")
+MOBY_DOCKERFILE=$(get_file_content "moby/moby" "docker-${DOCKER_VERSION}" "Dockerfile")
 
 CONTAINERD_VERSION=$(echo "$MOBY_DOCKERFILE" | sed -n 's/.*CONTAINERD_VERSION=\([^ ]*\).*/\1/p' | head -1)
 if [[ -z "$CONTAINERD_VERSION" ]]; then
