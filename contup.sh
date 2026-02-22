@@ -1167,6 +1167,20 @@ cleanup_tmpdir() {
 
 ## Commands
 
+cmd_setup() {
+    print_banner
+    detect_install_mode
+
+    print_info "Installing contup CLI..."
+    install_self ""
+    ensure_path
+    install_shell_wrapper
+
+    echo ""
+    print_box "${S_OK} contup CLI installed" \
+        "Run 'contup install docker' or 'contup install podman' to get started"
+}
+
 cmd_install() {
     local runtime="${1:-}"
 
@@ -2075,11 +2089,10 @@ parse_args() {
         runtime="${args[1]}"
     fi
 
-    # Default: if piped (curl | bash), run install with docker
+    # Default: if piped (curl | bash), install contup CLI only
     if [[ -z "$command" ]]; then
         if [[ ! -t 0 ]]; then
-            command="install"
-            runtime="docker"
+            command="setup"
             FLAG_YES=true
         else
             command="help"
@@ -2091,6 +2104,7 @@ parse_args() {
     detect_os
 
     case "$command" in
+        setup)      cmd_setup ;;
         install)    cmd_install "$runtime" ;;
         uninstall)  cmd_uninstall "$runtime" ;;
         update)     cmd_update "$runtime" ;;

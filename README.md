@@ -9,6 +9,7 @@ Static builds of **Docker**, **Podman**, and **Docker Compose** — compiled fro
 ## 🚀 Quick Start
 
 ```bash
+# Install contup CLI
 curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh | bash
 ```
 
