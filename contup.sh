@@ -6,7 +6,7 @@ set -euo pipefail
 # https://github.com/diphyx/contup
 
 CONTUP_VERSION="1.0.0"
-CONTUP_HASH="a1c1b7a"
+CONTUP_HASH="d01fa40"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -474,7 +474,7 @@ verify_checksum() {
 extract_binaries() {
     local tarball="$1" dest="$2"
     mkdir -p "$dest"
-    tar -xzf "$tarball" -C "$dest" || die "Failed to extract tarball"
+    tar -xzf "$tarball" -C "$dest" --strip-components=1 || die "Failed to extract tarball"
     print_ok "Extracted binaries"
 }
 
