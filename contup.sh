@@ -5,8 +5,7 @@ set -euo pipefail
 # Prebuilt container runtime binaries + CLI management tool for Linux
 # https://github.com/diphyx/contup
 
-CONTUP_VERSION="1.0.0"
-CONTUP_HASH="87f375f"
+CONTUP_VERSION="1.0.1 (bda8611)"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -2037,7 +2036,7 @@ parse_args() {
             --no-start)     FLAG_NO_START=true ;;
             --no-verify)    FLAG_NO_VERIFY=true ;;
             -h|--help)      command="help" ;;
-            -v|--version)   echo "contup v${CONTUP_VERSION} (${CONTUP_HASH})"; exit 0 ;;
+            -v|--version)   echo "contup v${CONTUP_VERSION}"; exit 0 ;;
             -*)             die "Unknown flag: $1" ;;
             *)              args+=("$1") ;;
         esac
