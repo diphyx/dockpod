@@ -3,15 +3,52 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
-      release_tag:
-        description: "Release tag (e.g., v1.0.0)"
-        required: true
+      version:
+        description: "Release version tag"
+        required: false
+        default: "dev"
         type: string
+      platform:
+        description: "Target architecture platform"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - both
+          - amd64
+          - arm64
+      runtime:
+        description: "Container runtime target"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - both
+          - docker
+          - podman
+      compose:
+        description: "Include Docker Compose"
+        required: false
+        default: true
+        type: boolean
   workflow_call:
     inputs:
-      release_tag:
-        required: true
+      version:
+        required: false
+        default: "dev"
         type: string
+      platform:
+        required: false
+        default: "both"
+        type: string
+      runtime:
+        required: false
+        default: "both"
+        type: string
+      compose:
+        required: false
+        default: true
+        type: boolean
 
 env:
   GO_VERSION: "1.25"
@@ -23,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [amd64, arm64]
+        arch: ${{ inputs.platform == 'amd64' && fromJSON('["amd64"]') || inputs.platform == 'arm64' && fromJSON('["arm64"]') || fromJSON('["amd64", "arm64"]') }}
 
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +75,7 @@ jobs:
           cache: false
 
       - name: Setup Rust
+        if: inputs.runtime != 'docker'
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.RUST_VERSION }}
@@ -49,10 +87,19 @@ jobs:
       - name: Build binaries
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          RUNTIME: ${{ inputs.runtime || 'both' }}
+          COMPOSE: ${{ inputs.compose }}
         run: .github/scripts/build-binaries.sh
 
+      - name: Test binaries
+        if: matrix.arch == 'amd64'
+        env:
+          RUNTIME: ${{ inputs.runtime || 'both' }}
+          COMPOSE: ${{ inputs.compose }}
+        run: sudo -E .github/scripts/test-binaries.sh
+
       - name: Bundle tarball
-        run: .github/scripts/bundle.sh "${{ inputs.release_tag }}" "${{ matrix.arch }}"
+        run: .github/scripts/bundle-tarball.sh "${{ inputs.version || 'dev' }}" "${{ matrix.arch }}" "${{ inputs.runtime || 'both' }}" "${{ inputs.compose }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

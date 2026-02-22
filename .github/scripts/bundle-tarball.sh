@@ -2,18 +2,22 @@
 set -euo pipefail
 
 # Bundle all built binaries into a release tarball
-# Usage: bundle.sh <release-tag> <arch>
+# Usage: bundle-tarball.sh <release-tag> <arch> [runtime]
 
-RELEASE_TAG="${1:?Usage: bundle.sh <release-tag> <arch>}"
-ARCH="${2:?Usage: bundle.sh <release-tag> <arch>}"
+RELEASE_TAG="${1:?Usage: bundle-tarball.sh <release-tag> <arch> [runtime]}"
+ARCH="${2:?Usage: bundle-tarball.sh <release-tag> <arch> [runtime]}"
+RUNTIME="${3:-both}"
+COMPOSE="${4:-true}"
 
 BUNDLE="/tmp/contup-bundle"
 
-echo "==> Bundling contup-${RELEASE_TAG}-${ARCH}..."
+echo "==> Bundling contup-${RELEASE_TAG}-${ARCH} (${RUNTIME})..."
 
-mkdir -p "${BUNDLE}/docker" "${BUNDLE}/docker-rootless" "${BUNDLE}/compose" "${BUNDLE}/podman"
+mkdir -p "${BUNDLE}"
 
 # Docker
+if [[ "$RUNTIME" != "podman" ]]; then
+mkdir -p "${BUNDLE}/docker" "${BUNDLE}/docker-rootless"
 cp /tmp/docker-cli/docker                          "${BUNDLE}/docker/"
 cp /tmp/moby/dockerd                               "${BUNDLE}/docker/"
 cp /tmp/moby/docker-proxy                          "${BUNDLE}/docker/"
@@ -25,11 +29,17 @@ cp /tmp/tini/docker-init                           "${BUNDLE}/docker/"
 # Docker rootless
 cp /tmp/rootlesskit/rootlesskit                    "${BUNDLE}/docker-rootless/"
 cp /tmp/dockerd-rootless.sh                        "${BUNDLE}/docker-rootless/"
+fi
 
 # Compose
+if [[ "$COMPOSE" != "false" ]]; then
+mkdir -p "${BUNDLE}/compose"
 cp /tmp/compose/docker-compose                     "${BUNDLE}/compose/"
+fi
 
 # Podman
+if [[ "$RUNTIME" != "docker" ]]; then
+mkdir -p "${BUNDLE}/podman"
 cp /tmp/podman/bin/podman                          "${BUNDLE}/podman/"
 cp /tmp/crun/crun                                  "${BUNDLE}/podman/"
 cp /tmp/conmon/bin/conmon                          "${BUNDLE}/podman/"
@@ -37,6 +47,7 @@ cp /tmp/netavark/netavark                          "${BUNDLE}/podman/"
 cp /tmp/aardvark-dns/aardvark-dns                  "${BUNDLE}/podman/"
 cp /tmp/slirp4netns/slirp4netns                    "${BUNDLE}/podman/"
 cp /tmp/fuse-overlayfs/fuse-overlayfs               "${BUNDLE}/podman/"
+fi
 
 # contup.sh
 cp contup.sh "${BUNDLE}/"

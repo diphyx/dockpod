@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build all container runtime binaries from source
+# Build container runtime binaries from source, or download pre-built
+# static binaries from GitHub releases when available.
 # Requires: versions.env loaded into environment, GOARCH and CARGO_TARGET set
+# Optional: RUNTIME=docker|podman|both (default: both)
+
+RUNTIME="${RUNTIME:-both}"
+COMPOSE="${COMPOSE:-true}"
 
 download_source() {
     local org_repo="$1" tag="$2" dest="$3"
@@ -16,16 +21,13 @@ download_source() {
     rm -f "$tarball"
 }
 
-download_release() {
+download_binary() {
     local org_repo="$1" tag="$2" asset="$3" dest="$4"
     local url="https://github.com/${org_repo}/releases/download/${tag}/${asset}"
-    local tarball="/tmp/${asset}"
 
     echo "    Downloading ${url}..."
-    curl -fSL -o "$tarball" "$url"
-    mkdir -p "$dest"
-    tar -xzf "$tarball" --strip-components=1 -C "$dest"
-    rm -f "$tarball"
+    curl -fSL -o "$dest" "$url"
+    chmod +x "$dest"
 }
 
 init_git_tag() {
@@ -63,6 +65,18 @@ if [[ "${CC:-}" == *aarch64* ]]; then
     export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
 fi
 
+# Map GOARCH to arch names used by release binaries
+if [[ "${GOARCH:-amd64}" == "arm64" ]]; then
+    CRUN_ARCH="linux-arm64"
+    UNAME_ARCH="aarch64"
+else
+    CRUN_ARCH="linux-amd64"
+    UNAME_ARCH="x86_64"
+fi
+
+# ─── Docker stack ───
+
+if [[ "$RUNTIME" != "podman" ]]; then
 echo "==> Building Docker stack..."
 
 # docker CLI
@@ -122,14 +136,21 @@ CGO_ENABLED=0 GOOS=linux go build -o rootlesskit ./cmd/rootlesskit
 echo "  Copying dockerd-rootless.sh..."
 cp /tmp/moby/contrib/dockerd-rootless.sh /tmp/dockerd-rootless.sh
 chmod +x /tmp/dockerd-rootless.sh
+fi
 
-# docker-compose
+# ─── Compose ───
+
+if [[ "$COMPOSE" != "false" ]]; then
 echo "==> Building Docker Compose..."
 download_source docker/compose "$COMPOSE_VERSION" /tmp/compose
 cd /tmp/compose
 COMPOSE_MODULE=$(head -1 go.mod | awk '{print $2}')
 CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-X ${COMPOSE_MODULE}/internal.Version=${COMPOSE_VERSION}" -o docker-compose ./cmd
+fi
 
+# ─── Podman stack ───
+
+if [[ "$RUNTIME" != "docker" ]]; then
 echo "==> Building Podman stack..."
 
 # podman
@@ -141,16 +162,10 @@ CGO_ENABLED=1 GOOS=linux go build -mod=vendor \
     -ldflags '-s -w -extldflags "-static -lm"' \
     -o bin/podman ./cmd/podman
 
-# crun
-echo "  Building crun..."
-download_release containers/crun "$CRUN_VERSION" "crun-${CRUN_VERSION}.tar.gz" /tmp/crun
-cd /tmp/crun
-configure_args="--enable-static --disable-systemd"
-if [[ "${CC:-}" == *aarch64* ]]; then
-    configure_args+=" --host=aarch64-linux-gnu"
-fi
-./configure $configure_args
-make LDFLAGS="-static"
+# crun (pre-built static binary)
+echo "  Downloading crun..."
+mkdir -p /tmp/crun
+download_binary containers/crun "$CRUN_VERSION" "crun-${CRUN_VERSION}-${CRUN_ARCH}-disable-systemd" /tmp/crun/crun
 
 # conmon
 echo "  Building conmon..."
@@ -174,30 +189,15 @@ cd /tmp/aardvark-dns
 cargo build --release --target "$CARGO_TARGET"
 cp "target/${CARGO_TARGET}/release/aardvark-dns" aardvark-dns
 
-# slirp4netns
-echo "  Building slirp4netns..."
-download_source rootless-containers/slirp4netns "$SLIRP4NETNS_VERSION" /tmp/slirp4netns
-init_git_tag /tmp/slirp4netns "$SLIRP4NETNS_VERSION"
-cd /tmp/slirp4netns
-./autogen.sh
-configure_args=""
-if [[ "${CC:-}" == *aarch64* ]]; then
-    configure_args="--host=aarch64-linux-gnu"
-fi
-LDFLAGS=-static ./configure $configure_args
-make
+# slirp4netns (pre-built static binary)
+echo "  Downloading slirp4netns..."
+mkdir -p /tmp/slirp4netns
+download_binary rootless-containers/slirp4netns "$SLIRP4NETNS_VERSION" "slirp4netns-${UNAME_ARCH}" /tmp/slirp4netns/slirp4netns
 
-# fuse-overlayfs
-echo "  Building fuse-overlayfs..."
-download_source containers/fuse-overlayfs "$FUSE_OVERLAYFS_VERSION" /tmp/fuse-overlayfs
-init_git_tag /tmp/fuse-overlayfs "$FUSE_OVERLAYFS_VERSION"
-cd /tmp/fuse-overlayfs
-./autogen.sh
-configure_args="CFLAGS=-static LDFLAGS=-static"
-if [[ "${CC:-}" == *aarch64* ]]; then
-    configure_args+=" --host=aarch64-linux-gnu"
+# fuse-overlayfs (pre-built static binary)
+echo "  Downloading fuse-overlayfs..."
+mkdir -p /tmp/fuse-overlayfs
+download_binary containers/fuse-overlayfs "${FUSE_OVERLAYFS_VERSION}" "fuse-overlayfs-${UNAME_ARCH}" /tmp/fuse-overlayfs/fuse-overlayfs
 fi
-./configure $configure_args
-make
 
 echo "==> All binaries built"
