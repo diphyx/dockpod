@@ -1505,20 +1505,27 @@ cmd_uninstall() {
     # Data
     if confirm "Remove all container data (images, containers, volumes)? THIS CANNOT BE UNDONE"; then
         if [[ "$runtime" == "docker" || "$runtime" == "both" ]]; then
+            local docker_dirs=()
             if [[ "$IS_ROOT" == true ]]; then
-                rm -rf /var/lib/docker
-                rm -rf /var/lib/containerd
+                docker_dirs=(/var/lib/docker /var/lib/containerd)
             else
-                rm -rf "${HOME}/.local/share/docker"
+                docker_dirs=("${HOME}/.local/share/docker")
             fi
+            for d in "${docker_dirs[@]}"; do
+                umount -R "$d" 2>/dev/null || true
+                rm -rf "$d"
+            done
             print_ok "Removed Docker data"
         fi
         if [[ "$runtime" == "podman" || "$runtime" == "both" ]]; then
+            local podman_dir
             if [[ "$IS_ROOT" == true ]]; then
-                rm -rf /var/lib/containers
+                podman_dir="/var/lib/containers"
             else
-                rm -rf "${HOME}/.local/share/containers"
+                podman_dir="${HOME}/.local/share/containers"
             fi
+            umount -R "$podman_dir" 2>/dev/null || true
+            rm -rf "$podman_dir"
             print_ok "Removed Podman data"
         fi
     fi
