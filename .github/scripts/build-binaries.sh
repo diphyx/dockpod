@@ -16,6 +16,18 @@ download_source() {
     rm -f "$tarball"
 }
 
+download_release() {
+    local org_repo="$1" tag="$2" asset="$3" dest="$4"
+    local url="https://github.com/${org_repo}/releases/download/${tag}/${asset}"
+    local tarball="/tmp/${asset}"
+
+    echo "    Downloading ${url}..."
+    curl -fSL -o "$tarball" "$url"
+    mkdir -p "$dest"
+    tar -xzf "$tarball" --strip-components=1 -C "$dest"
+    rm -f "$tarball"
+}
+
 init_git_tag() {
     local dest="$1" tag="$2"
 
@@ -124,11 +136,7 @@ CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
 
 # crun
 echo "  Building crun..."
-curl -fSL -o /tmp/crun.tar.gz \
-    "https://github.com/containers/crun/releases/download/${CRUN_VERSION}/crun-${CRUN_VERSION}.tar.gz"
-mkdir -p /tmp/crun
-tar -xzf /tmp/crun.tar.gz --strip-components=1 -C /tmp/crun
-rm -f /tmp/crun.tar.gz
+download_release containers/crun "$CRUN_VERSION" "crun-${CRUN_VERSION}.tar.gz" /tmp/crun
 cd /tmp/crun
 configure_args="--enable-static"
 if [[ "${CC:-}" == *aarch64* ]]; then
