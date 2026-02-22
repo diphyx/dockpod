@@ -138,7 +138,7 @@ CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
 echo "  Building crun..."
 download_release containers/crun "$CRUN_VERSION" "crun-${CRUN_VERSION}.tar.gz" /tmp/crun
 cd /tmp/crun
-configure_args="--enable-static"
+configure_args="--enable-static --disable-systemd"
 if [[ "${CC:-}" == *aarch64* ]]; then
     configure_args+=" --host=aarch64-linux-gnu"
 fi
