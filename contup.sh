@@ -6,6 +6,7 @@ set -euo pipefail
 # https://github.com/diphyx/contup
 
 CONTUP_VERSION="1.0.0"
+CONTUP_HASH="6e2020c"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -190,11 +191,11 @@ spinner() {
     local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     local i=0
     while kill -0 "$pid" 2>/dev/null; do
-        printf "\r  %s  %s" "${chars:i%${#chars}:1}" "$msg"
+        printf "\r  %s  %s" "${chars:i%${#chars}:1}" "$msg" >&2
         ((i++))
         sleep 0.1
     done
-    printf "\r"
+    printf "\r\033[2K" >&2
 }
 
 print_box() {
@@ -432,24 +433,28 @@ detect_mode() {
 
 fetch_latest_release() {
     local api_url="${GITHUB_API}/releases/latest"
-    local response
-    response=$(curl -fsSL "$api_url" 2>/dev/null) || die "Failed to fetch latest release from GitHub"
-    echo "$response"
+    local tmp_file="/tmp/contup-release-$$.json"
+    curl -fsSL "$api_url" -o "$tmp_file" 2>/dev/null &
+    local pid=$!
+    spinner "$pid" "Fetching latest release..."
+    wait "$pid" || die "Failed to fetch latest release from GitHub"
+    cat "$tmp_file"
+    rm -f "$tmp_file"
 }
 
 download_tarball() {
     local url="$1" dest="$2"
     local tmp_file="${dest}.tmp"
+    local name
+    name=$(basename "$dest")
 
-    if [[ -t 1 ]]; then
-        echo ""
-        curl -fL --progress-bar -o "$tmp_file" "$url" || die "Download failed: ${url}"
-    else
-        print_dim "Downloading $(basename "$dest")... (this may take a moment)"
-        curl -fsSL -o "$tmp_file" "$url" || die "Download failed: ${url}"
-    fi
+    curl -fsSL -o "$tmp_file" "$url" &
+    local pid=$!
+    spinner "$pid" "Downloading ${name}..."
+    wait "$pid" || die "Download failed: ${url}"
+
     mv "$tmp_file" "$dest"
-    print_ok "Downloaded $(basename "$dest")"
+    print_ok "Downloaded ${name}"
 }
 
 verify_checksum() {
@@ -1239,8 +1244,6 @@ cmd_install() {
         src_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
         print_ok "Using bundled binaries"
     else
-        print_info "Downloading latest release..."
-
         local release_json
         release_json=$(fetch_latest_release)
 
@@ -1535,7 +1538,6 @@ cmd_update() {
     done
 
     # Download latest
-    print_info "Fetching latest release..."
     local release_json
     release_json=$(fetch_latest_release)
 
@@ -2040,7 +2042,7 @@ parse_args() {
             --no-start)     FLAG_NO_START=true ;;
             --no-verify)    FLAG_NO_VERIFY=true ;;
             -h|--help)      command="help" ;;
-            -v|--version)   echo "contup v${CONTUP_VERSION}"; exit 0 ;;
+            -v|--version)   echo "contup v${CONTUP_VERSION} (${CONTUP_HASH})"; exit 0 ;;
             -*)             die "Unknown flag: $1" ;;
             *)              args+=("$1") ;;
         esac

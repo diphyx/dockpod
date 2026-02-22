@@ -6,13 +6,15 @@ Static builds of **Docker**, **Podman**, and **Docker Compose** — compiled fro
 
 ---
 
-## 🚀 Quick Install
+## 🚀 Quick Start
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh | bash
-```
+# 1. Download the script
+curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh -o contup.sh
 
-> Installs Docker + Compose with default settings. For more control, download `contup.sh` and run it directly.
+# 2. Run the script
+bash contup.sh install
+```
 
 ---
 
