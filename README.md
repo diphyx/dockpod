@@ -20,12 +20,10 @@ curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh | bash
 
 No repos. No dependencies. No distro-specific packages. Just **static binaries** from official sources.
 
-| Scenario                    | Description                                                               |
-| --------------------------- | ------------------------------------------------------------------------- |
-| 🔒 **No root access**       | HPC users, shared servers, or locked-down machines where you can't `sudo` |
-| 🌐 **Restricted networks**  | Environments behind firewalls that block distro repos but allow GitHub    |
-| ✈️ **Offline / air-gapped** | Download one tarball, transfer via USB or scp, install without network    |
-| 📭 **No package manager**   | Minimal containers, scratch VMs, or custom distros without apt/yum/dnf    |
+- 🔒 **No root access** — HPC users, shared servers, or locked-down machines where you can't `sudo`
+- 🌐 **Restricted networks** — environments behind firewalls that block distro repos but allow GitHub
+- ✈️ **Offline / air-gapped** — download one tarball, transfer via USB or scp, install without network
+- 📭 **No package manager** — minimal containers, scratch VMs, or custom distros without apt/yum/dnf
 
 ---
 

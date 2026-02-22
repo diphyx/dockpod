@@ -5,7 +5,7 @@ set -euo pipefail
 # Prebuilt container runtime binaries + CLI management tool for Linux
 # https://github.com/diphyx/contup
 
-CONTUP_VERSION="0.1.0"
+CONTUP_VERSION="1.0.0"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -195,15 +195,13 @@ print_box() {
     local title="$1"
     shift
     local lines=("$@")
-    local width=52
 
-    echo -e "  ┌──────────────────────────────────────────────────────┐"
-    printf "  │  %-52s │\n" "${title}"
-    echo -e "  ├──────────────────────────────────────────────────────┤"
+    echo -e "  ${C_BOLD}${title}${C_RESET}"
+    echo ""
     for line in "${lines[@]}"; do
-        printf "  │  %-52s │\n" "${line}"
+        echo -e "  ${line}"
     done
-    echo -e "  └──────────────────────────────────────────────────────┘"
+    echo ""
 }
 
 # System detection
@@ -927,14 +925,10 @@ install_shell_wrapper() {
     local wrapper
     read -r -d '' wrapper <<'WRAPPER' || true
 contup() { # contup: shell-wrapper
-    local _contup_script
-    _contup_script=$(command -v contup.sh 2>/dev/null || command -v contup 2>/dev/null) || { echo "contup: not found" >&2; return 1; }
-    command bash "$_contup_script" "$@"
-    local _rc=$?
+    command contup.sh "$@"; local _rc=$?
     if [[ "$1" == "switch" && $_rc -eq 0 ]]; then
-        local _line
-        _line=$(grep '# contup: DOCKER_HOST' /etc/profile.d/contup.sh "${HOME}/.bashrc" "${HOME}/.zshrc" "${HOME}/.profile" 2>/dev/null | head -1)
-        [[ -n "$_line" ]] && eval "${_line#*:}"
+        local _l; _l=$(grep '# contup: DOCKER_HOST' /etc/profile.d/contup.sh ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | head -1)
+        [[ -n "$_l" ]] && eval "${_l#*:}"
     fi
     return $_rc
 } # contup: shell-wrapper-end
