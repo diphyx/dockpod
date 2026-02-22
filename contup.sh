@@ -5,7 +5,7 @@ set -euo pipefail
 # Prebuilt container runtime binaries + CLI management tool for Linux
 # https://github.com/diphyx/contup
 
-CONTUP_VERSION="1.0.3 (65faecb)"
+CONTUP_VERSION="1.0.3 (f0f359e)"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -531,7 +531,8 @@ install_self() {
     fi
 
     chmod +x "${BIN_DIR}/contup.sh"
-    print_ok "Installed contup.sh to ${BIN_DIR}"
+    ln -sf "${BIN_DIR}/contup.sh" "${BIN_DIR}/contup"
+    print_ok "Installed contup to ${BIN_DIR}"
 }
 
 install_cli_plugins() {
