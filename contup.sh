@@ -6,7 +6,7 @@ set -euo pipefail
 # https://github.com/diphyx/contup
 
 CONTUP_VERSION="1.0.0"
-CONTUP_HASH="df313f8"
+CONTUP_HASH="a1c1b7a"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -1246,13 +1246,15 @@ cmd_install() {
         local release_json
         release_json=$(fetch_latest_release)
 
-        local tarball_name="contup-${ARCH}.tar.gz"
         local tarball_url
-        tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*${tarball_name}\"" | grep -o 'https://[^"]*' || true)
+        tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*contup-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
 
         if [[ -z "$tarball_url" ]]; then
             die "No tarball found for architecture: ${ARCH}"
         fi
+
+        local tarball_name
+        tarball_name=$(basename "$tarball_url")
 
         local checksum_url
         checksum_url=$(echo "$release_json" | grep -o '"browser_download_url": *"[^"]*checksums[^"]*"' | grep -o 'https://[^"]*' || true)
@@ -1540,13 +1542,15 @@ cmd_update() {
     local release_json
     release_json=$(fetch_latest_release)
 
-    local tarball_name="contup-${ARCH}.tar.gz"
     local tarball_url
-    tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*${tarball_name}\"" | grep -o 'https://[^"]*' || true)
+    tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*contup-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
 
     if [[ -z "$tarball_url" ]]; then
         die "No tarball found for architecture: ${ARCH}"
     fi
+
+    local tarball_name
+    tarball_name=$(basename "$tarball_url")
 
     download_tarball "$tarball_url" "${TMPDIR_CONTUP}/${tarball_name}"
 
