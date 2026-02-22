@@ -9,7 +9,7 @@ CONTUP_VERSION="1.0.0"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
-# Constants
+# Binaries
 DOCKER_BINARIES="docker dockerd containerd containerd-shim-runc-v2 runc docker-proxy docker-init"
 DOCKER_ROOTLESS_BINARIES="dockerd-rootless.sh rootlesskit"
 COMPOSE_BINARY="docker-compose"
@@ -35,27 +35,33 @@ S_WARN="⚠"
 S_DOT="●"
 S_ARROW="▸"
 
-# Globals (set by detect functions)
+# System info
 ARCH=""
 OS_NAME=""
 OS_VERSION=""
 KERNEL_VERSION=""
 IS_ROOT=false
 INSTALL_MODE=""
+
+# Paths
 BIN_DIR=""
 CONFIG_DIR_DOCKER=""
 CONFIG_DIR_PODMAN=""
 SYSTEMD_DIR=""
 CLI_PLUGINS_DIR=""
+TMPDIR_CONTUP=""
+
+# Sockets
 DOCKER_HOST_SOCKET=""
 PODMAN_HOST_SOCKET=""
-TMPDIR_CONTUP=""
+
+# Flags
 FLAG_YES=false
 FLAG_OFFLINE=false
 FLAG_NO_START=false
 FLAG_NO_VERIFY=false
 
-# UI
+## UI
 
 print_banner() {
     echo -e "${C_BOLD}"
@@ -204,7 +210,7 @@ print_box() {
     echo ""
 }
 
-# System detection
+## System detection
 
 detect_arch() {
     local machine
@@ -405,7 +411,7 @@ get_active_runtime() {
     fi
 }
 
-# Download
+## Download
 
 detect_mode() {
     local script_dir
@@ -435,8 +441,13 @@ download_tarball() {
     local url="$1" dest="$2"
     local tmp_file="${dest}.tmp"
 
-    echo ""
-    curl -fL --progress-bar -o "$tmp_file" "$url" || die "Download failed: ${url}"
+    if [[ -t 1 ]]; then
+        echo ""
+        curl -fL --progress-bar -o "$tmp_file" "$url" || die "Download failed: ${url}"
+    else
+        print_dim "Downloading $(basename "$dest")... (this may take a moment)"
+        curl -fsSL -o "$tmp_file" "$url" || die "Download failed: ${url}"
+    fi
     mv "$tmp_file" "$dest"
     print_ok "Downloaded $(basename "$dest")"
 }
@@ -461,7 +472,7 @@ extract_binaries() {
     print_ok "Extracted binaries"
 }
 
-# Install
+## Install
 
 install_binaries() {
     local src_dir="$1" runtime="$2"
@@ -524,106 +535,7 @@ create_podman_compose_symlink() {
     fi
 }
 
-# Configure
-
-configure_docker_root() {
-    mkdir -p "$CONFIG_DIR_DOCKER"
-
-    # daemon.json
-    if [[ ! -f "${CONFIG_DIR_DOCKER}/daemon.json" ]]; then
-        cat > "${CONFIG_DIR_DOCKER}/daemon.json" <<'DAEMON_JSON'
-{
-    "storage-driver": "overlay2",
-    "log-driver": "json-file",
-    "log-opts": {
-        "max-size": "10m",
-        "max-file": "3"
-    }
-}
-DAEMON_JSON
-        print_ok "Created ${CONFIG_DIR_DOCKER}/daemon.json"
-    else
-        print_dim "Skipped daemon.json (already exists)"
-    fi
-
-    # systemd units
-    write_docker_systemd_unit
-    write_containerd_systemd_unit
-
-    # docker group
-    setup_docker_group
-}
-
-configure_docker_rootless() {
-    mkdir -p "$CONFIG_DIR_DOCKER"
-
-    # daemon.json
-    if [[ ! -f "${CONFIG_DIR_DOCKER}/daemon.json" ]]; then
-        cat > "${CONFIG_DIR_DOCKER}/daemon.json" <<'DAEMON_JSON'
-{
-    "storage-driver": "overlay2",
-    "log-driver": "json-file",
-    "log-opts": {
-        "max-size": "10m",
-        "max-file": "3"
-    }
-}
-DAEMON_JSON
-        print_ok "Created ${CONFIG_DIR_DOCKER}/daemon.json"
-    else
-        print_dim "Skipped daemon.json (already exists)"
-    fi
-
-    # systemd user unit
-    write_docker_systemd_user_unit
-
-    # DOCKER_HOST
-    update_shell_profile "DOCKER_HOST" "$DOCKER_HOST_SOCKET"
-}
-
-configure_podman_root() {
-    mkdir -p "$CONFIG_DIR_PODMAN"
-
-    write_containers_conf "$CONFIG_DIR_PODMAN"
-    write_registries_conf "$CONFIG_DIR_PODMAN"
-    write_storage_conf "$CONFIG_DIR_PODMAN"
-    write_policy_json "$CONFIG_DIR_PODMAN"
-
-    # systemd unit
-    write_podman_systemd_unit
-
-    # DOCKER_HOST (only if docker not installed)
-    if ! is_runtime_installed docker; then
-        update_shell_profile "DOCKER_HOST" "$PODMAN_HOST_SOCKET"
-    fi
-}
-
-configure_podman_rootless() {
-    mkdir -p "$CONFIG_DIR_PODMAN"
-
-    write_containers_conf "$CONFIG_DIR_PODMAN"
-    write_registries_conf "$CONFIG_DIR_PODMAN"
-    write_storage_conf "$CONFIG_DIR_PODMAN"
-    write_policy_json "$CONFIG_DIR_PODMAN"
-
-    # subuid/subgid
-    setup_subuid_subgid
-
-    # systemd user unit
-    write_podman_systemd_user_unit
-
-    # DOCKER_HOST (only if docker not installed)
-    if ! is_runtime_installed docker; then
-        update_shell_profile "DOCKER_HOST" "$PODMAN_HOST_SOCKET"
-    fi
-}
-
-configure_compose() {
-    install_cli_plugins
-    if is_runtime_installed podman; then
-        create_podman_compose_symlink
-    fi
-}
+## Configuration
 
 write_containers_conf() {
     local dir="$1"
@@ -684,8 +596,6 @@ write_policy_json() {
 EOF
     print_ok "Created ${dir}/policy.json"
 }
-
-# Systemd units
 
 write_docker_systemd_unit() {
     mkdir -p "$SYSTEMD_DIR"
@@ -857,7 +767,106 @@ setup_subuid_subgid() {
     done
 }
 
-# Shell profile
+configure_docker_root() {
+    mkdir -p "$CONFIG_DIR_DOCKER"
+
+    # daemon.json
+    if [[ ! -f "${CONFIG_DIR_DOCKER}/daemon.json" ]]; then
+        cat > "${CONFIG_DIR_DOCKER}/daemon.json" <<'DAEMON_JSON'
+{
+    "storage-driver": "overlay2",
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "10m",
+        "max-file": "3"
+    }
+}
+DAEMON_JSON
+        print_ok "Created ${CONFIG_DIR_DOCKER}/daemon.json"
+    else
+        print_dim "Skipped daemon.json (already exists)"
+    fi
+
+    # systemd units
+    write_docker_systemd_unit
+    write_containerd_systemd_unit
+
+    # docker group
+    setup_docker_group
+}
+
+configure_docker_rootless() {
+    mkdir -p "$CONFIG_DIR_DOCKER"
+
+    # daemon.json
+    if [[ ! -f "${CONFIG_DIR_DOCKER}/daemon.json" ]]; then
+        cat > "${CONFIG_DIR_DOCKER}/daemon.json" <<'DAEMON_JSON'
+{
+    "storage-driver": "overlay2",
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "10m",
+        "max-file": "3"
+    }
+}
+DAEMON_JSON
+        print_ok "Created ${CONFIG_DIR_DOCKER}/daemon.json"
+    else
+        print_dim "Skipped daemon.json (already exists)"
+    fi
+
+    # systemd user unit
+    write_docker_systemd_user_unit
+
+    # DOCKER_HOST
+    update_shell_profile "DOCKER_HOST" "$DOCKER_HOST_SOCKET"
+}
+
+configure_podman_root() {
+    mkdir -p "$CONFIG_DIR_PODMAN"
+
+    write_containers_conf "$CONFIG_DIR_PODMAN"
+    write_registries_conf "$CONFIG_DIR_PODMAN"
+    write_storage_conf "$CONFIG_DIR_PODMAN"
+    write_policy_json "$CONFIG_DIR_PODMAN"
+
+    # systemd unit
+    write_podman_systemd_unit
+
+    # DOCKER_HOST (only if docker not installed)
+    if ! is_runtime_installed docker; then
+        update_shell_profile "DOCKER_HOST" "$PODMAN_HOST_SOCKET"
+    fi
+}
+
+configure_podman_rootless() {
+    mkdir -p "$CONFIG_DIR_PODMAN"
+
+    write_containers_conf "$CONFIG_DIR_PODMAN"
+    write_registries_conf "$CONFIG_DIR_PODMAN"
+    write_storage_conf "$CONFIG_DIR_PODMAN"
+    write_policy_json "$CONFIG_DIR_PODMAN"
+
+    # subuid/subgid
+    setup_subuid_subgid
+
+    # systemd user unit
+    write_podman_systemd_user_unit
+
+    # DOCKER_HOST (only if docker not installed)
+    if ! is_runtime_installed docker; then
+        update_shell_profile "DOCKER_HOST" "$PODMAN_HOST_SOCKET"
+    fi
+}
+
+configure_compose() {
+    install_cli_plugins
+    if is_runtime_installed podman; then
+        create_podman_compose_symlink
+    fi
+}
+
+## Shell
 
 update_shell_profile() {
     local var_name="$1" var_value="$2"
@@ -973,7 +982,7 @@ remove_shell_wrapper() {
     fi
 }
 
-# Services
+## Services
 
 _systemctl() {
     if [[ "$IS_ROOT" == true ]]; then
@@ -1059,7 +1068,7 @@ wait_for_socket() {
     fi
 }
 
-# Verify
+## Verification
 
 verify_binary() {
     local runtime="$1"
@@ -1127,7 +1136,7 @@ verify_compose() {
     return 1
 }
 
-# Cleanup
+## Cleanup
 
 setup_tmpdir() {
     TMPDIR_CONTUP=$(mktemp -d /tmp/contup.XXXXXX)
@@ -1140,7 +1149,7 @@ cleanup_tmpdir() {
     fi
 }
 
-# Commands
+## Commands
 
 cmd_install() {
     local runtime="${1:-}"
@@ -2019,7 +2028,7 @@ cmd_help() {
     echo "  contup info                   Show detailed system info"
 }
 
-# Main
+## Entry point
 
 parse_args() {
     local command="" runtime="" args=()
