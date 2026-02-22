@@ -157,7 +157,8 @@ echo "  Building conmon..."
 download_source containers/conmon "$CONMON_VERSION" /tmp/conmon
 init_git_tag /tmp/conmon "$CONMON_VERSION"
 cd /tmp/conmon
-make CC="${CC:-gcc}" PKG_CONFIG='pkg-config --static' CFLAGS='-static' LDFLAGS='-static' LIBS='-lcap'
+sed -i 's/$(LIBS)$/-Wl,--start-group $(LIBS) -lcap -Wl,--end-group/' Makefile
+make CC="${CC:-gcc}" PKG_CONFIG='pkg-config --static' CFLAGS='-static' LDFLAGS='-static'
 
 # netavark
 echo "  Building netavark..."
