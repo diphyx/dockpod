@@ -227,8 +227,11 @@ contup switch docker
 Download a release tarball, extract it, and run contup with `--offline`:
 
 ```bash
+# Extract the tarball
 tar -xzf contup-v1.0.0-amd64.tar.gz
 cd contup-v1.0.0-amd64
+
+# Install using bundled binaries
 ./contup.sh install docker --offline
 ```
 
