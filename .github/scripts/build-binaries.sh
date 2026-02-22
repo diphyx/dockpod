@@ -58,6 +58,11 @@ get_commit_sha() {
     echo "${sha:0:7}"
 }
 
+# Set pkg-config search path for arm64 cross-compilation
+if [[ "${CC:-}" == *aarch64* ]]; then
+    export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+fi
+
 echo "==> Building Docker stack..."
 
 # docker CLI
@@ -144,6 +149,7 @@ if [[ "${CC:-}" == *aarch64* ]]; then
 fi
 ./configure $configure_args
 make
+cp .libs/crun crun
 
 # conmon
 echo "  Building conmon..."
