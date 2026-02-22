@@ -25,6 +25,15 @@ init_git_tag() {
     git -C "$dest" tag "$tag"
 }
 
+fix_go_mod() {
+    local gomod="$1"
+
+    if [[ -f "$gomod" ]]; then
+        sed -i "s/^go .*/go $(go env GOVERSION | sed 's/^go//')/" "$gomod"
+        sed -i '/^toolchain /d' "$gomod"
+    fi
+}
+
 get_commit_sha() {
     local org_repo="$1" tag="$2"
     local ref_json sha type
@@ -54,6 +63,7 @@ download_source docker/cli "$DOCKER_VERSION" /tmp/docker-cli
 cd /tmp/docker-cli
 ln -s vendor.mod go.mod
 ln -s vendor.sum go.sum
+fix_go_mod go.mod
 DOCKER_GITCOMMIT=$(get_commit_sha docker/cli "$DOCKER_VERSION")
 CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
     -ldflags "-X github.com/docker/cli/cli/version.Version=${DOCKER_VERSION#v} -X github.com/docker/cli/cli/version.GitCommit=${DOCKER_GITCOMMIT}" \
@@ -63,6 +73,7 @@ CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
 echo "  Building dockerd + docker-proxy..."
 download_source moby/moby "docker-${DOCKER_VERSION}" /tmp/moby
 cd /tmp/moby
+fix_go_mod go.mod
 MOBY_GITCOMMIT=$(get_commit_sha moby/moby "docker-${DOCKER_VERSION}")
 GOOS=linux go build -mod=vendor \
     -ldflags "-X github.com/docker/docker/dockerversion.Version=${DOCKER_VERSION#v} -X github.com/docker/docker/dockerversion.GitCommit=${MOBY_GITCOMMIT}" \
@@ -73,6 +84,7 @@ CGO_ENABLED=0 GOOS=linux go build -mod=vendor -o docker-proxy ./cmd/docker-proxy
 echo "  Building containerd..."
 download_source containerd/containerd "$CONTAINERD_VERSION" /tmp/containerd
 cd /tmp/containerd
+fix_go_mod go.mod
 CGO_ENABLED=0 GOOS=linux go build -mod=vendor -o bin/containerd ./cmd/containerd
 CGO_ENABLED=0 GOOS=linux go build -mod=vendor -o bin/containerd-shim-runc-v2 ./cmd/containerd-shim-runc-v2
 
@@ -99,6 +111,7 @@ cp tini-static docker-init
 echo "  Building rootlesskit..."
 download_source rootless-containers/rootlesskit "$ROOTLESSKIT_VERSION" /tmp/rootlesskit
 cd /tmp/rootlesskit
+fix_go_mod go.mod
 CGO_ENABLED=0 GOOS=linux go build -o rootlesskit ./cmd/rootlesskit
 
 # dockerd-rootless.sh
@@ -106,10 +119,11 @@ echo "  Copying dockerd-rootless.sh..."
 cp /tmp/moby/contrib/dockerd-rootless.sh /tmp/dockerd-rootless.sh
 chmod +x /tmp/dockerd-rootless.sh
 
+# docker-compose
 echo "==> Building Docker Compose..."
-
 download_source docker/compose "$COMPOSE_VERSION" /tmp/compose
 cd /tmp/compose
+fix_go_mod go.mod
 CGO_ENABLED=0 GOOS=linux go build -trimpath -o docker-compose ./cmd
 
 echo "==> Building Podman stack..."
@@ -118,6 +132,7 @@ echo "==> Building Podman stack..."
 echo "  Building podman..."
 download_source containers/podman "$PODMAN_VERSION" /tmp/podman
 cd /tmp/podman
+fix_go_mod go.mod
 CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
     -tags "remote exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp" \
     -o bin/podman ./cmd/podman
