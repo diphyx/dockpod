@@ -137,7 +137,7 @@ echo "  Building podman..."
 download_source containers/podman "$PODMAN_VERSION" /tmp/podman
 cd /tmp/podman
 CGO_ENABLED=1 GOOS=linux go build -mod=vendor \
-    -tags "exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp" \
+    -tags "osusergo netgo exclude_graphdriver_btrfs exclude_graphdriver_devicemapper containers_image_openpgp" \
     -ldflags '-s -w -extldflags "-static"' \
     -o bin/podman ./cmd/podman
 
