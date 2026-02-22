@@ -137,7 +137,7 @@ echo "  Building podman..."
 download_source containers/podman "$PODMAN_VERSION" /tmp/podman
 cd /tmp/podman
 CGO_ENABLED=0 GOOS=linux go build -mod=vendor \
-    -tags "remote exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp" \
+    -tags "exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp" \
     -o bin/podman ./cmd/podman
 
 # crun

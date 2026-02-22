@@ -9,13 +9,19 @@ Static builds of **Docker**, **Podman**, and **Docker Compose** — compiled fro
 ## 🚀 Quick Start
 
 ```bash
-# 1. Download the script
+curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh | bash
+```
+
+Or download and run manually:
+
+```bash
+# Download the script
 curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh -o contup.sh
 
-# 2. Make it executable
+# Make it executable
 chmod +x contup.sh
 
-# 3. Run it
+# Run it
 ./contup.sh install
 ```
 
@@ -178,7 +184,7 @@ When run as a regular user, contup installs to:
 
 ### 🦭 Podman Stack
 
-> The `podman` binary is built as a remote client (`CGO_ENABLED=0` with `remote` build tag) that connects to the podman socket service managed by systemd.
+> The `podman` binary is built as a static binary (`CGO_ENABLED=0`) with the API service included, managed via systemd socket activation.
 
 | Binary           | Source                                                                                |
 | ---------------- | ------------------------------------------------------------------------------------- |

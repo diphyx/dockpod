@@ -5,7 +5,7 @@ set -euo pipefail
 # Prebuilt container runtime binaries + CLI management tool for Linux
 # https://github.com/diphyx/contup
 
-CONTUP_VERSION="1.0.2 (736ab45)"
+CONTUP_VERSION="1.0.3 (65faecb)"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -513,6 +513,25 @@ install_binaries() {
         ((count++)) || true
         progress_bar "$count" "$total" "$bin"
     done
+}
+
+install_self() {
+    local src_dir="$1"
+    mkdir -p "$BIN_DIR"
+
+    if [[ -f "${src_dir}/contup.sh" ]]; then
+        cp "${src_dir}/contup.sh" "${BIN_DIR}/contup.sh"
+    else
+        # curl | bash mode — download contup.sh from GitHub
+        local url="https://raw.githubusercontent.com/${GITHUB_REPO}/main/contup.sh"
+        curl -fsSL -o "${BIN_DIR}/contup.sh" "$url" || {
+            print_warn "Failed to download contup.sh"
+            return 1
+        }
+    fi
+
+    chmod +x "${BIN_DIR}/contup.sh"
+    print_ok "Installed contup.sh to ${BIN_DIR}"
 }
 
 install_cli_plugins() {
@@ -1290,6 +1309,9 @@ cmd_install() {
     print_info "Installing Compose..."
     install_binaries "$src_dir" "compose"
 
+    # Install contup.sh itself
+    install_self "$src_dir"
+
     ensure_path
     install_shell_wrapper
 
@@ -1582,6 +1604,9 @@ cmd_update() {
         install_cli_plugins
         print_ok "Compose updated"
     fi
+
+    # Update contup.sh itself
+    install_self "$src_dir"
 
     # Verify
     if [[ "$FLAG_NO_VERIFY" != true ]]; then
