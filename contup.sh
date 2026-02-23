@@ -542,6 +542,7 @@ install_binaries() {
             print_warn "Binary not found: ${bin} — skipping"
             continue
         fi
+        rm -f "${BIN_DIR}/${bin}"
         cp "$src" "${BIN_DIR}/${bin}"
         chmod +x "${BIN_DIR}/${bin}"
         ((count++)) || true
