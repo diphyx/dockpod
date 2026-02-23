@@ -3,45 +3,53 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>contup — container up</title>
-        <meta name="description" content="Prebuilt container runtime binaries for Linux. No repos. No dependencies. Just static binaries." />
-        <meta property="og:title" content="contup — container up" />
-        <meta property="og:description" content="Prebuilt container runtime binaries for Linux. No repos. No dependencies. Just static binaries." />
-        <meta property="og:image" content="https://raw.githubusercontent.com/diphyx/contup/main/showcase/png/setup.png" />
+
+        <!-- Title & Description -->
+        <title>contup — Prebuilt Container Runtime Binaries for Linux</title>
+        <meta name="description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed, rootless support included." />
+
+        <!-- Open Graph -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://diphyx.github.io/contup/" />
+        <meta property="og:title" content="contup — Prebuilt Container Runtime Binaries for Linux" />
+        <meta property="og:description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed, rootless support included." />
+        <meta property="og:image" content="https://raw.githubusercontent.com/diphyx/contup/main/docs/og.png" />
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="contup — Prebuilt Container Runtime Binaries for Linux" />
+        <meta name="twitter:description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed." />
+        <meta name="twitter:image" content="https://raw.githubusercontent.com/diphyx/contup/main/docs/og.png" />
+
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
         <style>
+            /* ── Theme ── */
             :root {
-                --bg: #fafafa;
-                --surface: #fff;
-                --border: #e5e5e5;
-                --border-hover: #ccc;
-                --text: #171717;
-                --text-muted: #737373;
-                --accent: #2563eb;
-                --accent-glow: rgba(37, 99, 235, 0.08);
-                --shadow: rgba(0, 0, 0, 0.08);
+                --bg: #080c15;
+                --surface: rgba(255, 255, 255, 0.04);
+                --border: rgba(255, 255, 255, 0.08);
+                --border-hover: rgba(255, 255, 255, 0.15);
+                --text: #ededed;
+                --text-muted: #a1a1aa;
+                --text-dim: #71717a;
+                --accent: #3b82f6;
+                --accent-glow: rgba(59, 130, 246, 0.12);
+                --shadow: rgba(0, 0, 0, 0.4);
+                --glass-bg: rgba(255, 255, 255, 0.06);
+                --glass-border-top: rgba(255, 255, 255, 0.12);
+                --glass-border-bottom: rgba(255, 255, 255, 0.04);
             }
 
-            @media (prefers-color-scheme: dark) {
-                :root {
-                    --bg: #0a0a0a;
-                    --surface: #141414;
-                    --border: #222;
-                    --border-hover: #444;
-                    --text: #ededed;
-                    --text-muted: #888;
-                    --accent: #3b82f6;
-                    --accent-glow: rgba(59, 130, 246, 0.15);
-                    --shadow: rgba(0, 0, 0, 0.4);
-                }
-            }
-
+            /* ── Reset ── */
             * { margin: 0; padding: 0; box-sizing: border-box; }
 
+            /* ── Layout ── */
             body {
                 font-family: "Inter", -apple-system, sans-serif;
-                background: var(--bg);
+                background: linear-gradient(135deg, #080c15 0%, #14161e 100%);
                 color: var(--text);
                 min-height: 100vh;
                 overflow-x: hidden;
@@ -51,12 +59,12 @@
 
             .bg-glow {
                 position: fixed;
-                top: -40%;
+                top: 50%;
                 left: 50%;
-                transform: translateX(-50%);
-                width: 800px;
+                transform: translate(-50%, -50%);
+                width: 600px;
                 height: 600px;
-                background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+                background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
                 pointer-events: none;
                 z-index: 0;
             }
@@ -64,7 +72,7 @@
             main {
                 position: relative;
                 z-index: 1;
-                max-width: 720px;
+                max-width: 640px;
                 width: 100%;
                 margin: 0 auto;
                 padding: 2.5rem 1.5rem 2rem;
@@ -72,21 +80,31 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                animation: fadeIn 0.6s ease-out;
             }
 
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(12px); }
+            /* ── Animations ── */
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
                 to { opacity: 1; transform: translateY(0); }
             }
 
-            .hero { text-align: center; margin-bottom: 1.5rem; }
+            @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+
+            /* ── Hero ── */
+            .hero {
+                text-align: center;
+                margin-bottom: 1.75rem;
+                animation: slideUp 0.6s ease-out both;
+            }
 
             .logo {
-                font-size: 2.5rem;
-                font-weight: 700;
+                font-size: 4rem;
+                font-weight: 800;
                 letter-spacing: -0.04em;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.75rem;
             }
 
             .tagline {
@@ -96,15 +114,21 @@
                 line-height: 1.6;
                 letter-spacing: -0.01em;
                 max-width: 420px;
-                margin: 0 auto;
-            }
-            .tagline strong {
-                color: var(--text);
-                font-weight: 500;
+                margin: 0 auto 0.35rem;
             }
 
+            .tagline-sub {
+                font-size: 0.8rem;
+                color: var(--text-dim);
+                opacity: 0.7;
+                font-weight: 400;
+                max-width: 420px;
+                margin: 0 auto;
+            }
+
+            /* ── Install Command ── */
             .install {
-                background: var(--surface);
+                background: var(--glass-bg);
                 border: 1px solid var(--border);
                 border-radius: 10px;
                 padding: 0.75rem 1.1rem;
@@ -112,10 +136,13 @@
                 align-items: center;
                 justify-content: space-between;
                 gap: 0.75rem;
-                max-width: 480px;
-                margin: 0 auto 1.5rem;
+                margin: 0 0 1.5rem;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 transition: border-color 0.2s, box-shadow 0.2s;
+                animation: slideUp 0.6s 0.1s ease-out both;
             }
+
             .install:hover {
                 border-color: var(--border-hover);
                 box-shadow: 0 2px 12px var(--shadow);
@@ -129,6 +156,7 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
             .install code .dim { color: var(--text-muted); }
 
             .install button {
@@ -143,73 +171,115 @@
                 display: flex;
                 align-items: center;
             }
+
             .install button:hover { color: var(--text); }
             .install button svg { width: 16px; height: 16px; }
 
+            /* ── Preview ── */
             .preview {
                 border-radius: 12px;
                 overflow: hidden;
                 border: 1px solid var(--border);
                 box-shadow: 0 16px 40px var(--shadow);
                 margin-bottom: 1.5rem;
+                opacity: 0;
+                transform: perspective(800px) rotateX(8deg) translateY(20px);
+                transition: opacity 0.8s ease, transform 0.8s ease;
             }
+
+            .preview.visible {
+                opacity: 1;
+                transform: perspective(800px) rotateX(0deg) translateY(0);
+            }
+
             .preview img { width: 100%; display: block; }
 
+            .preview.loading {
+                background: var(--surface);
+                min-height: 200px;
+                position: relative;
+            }
+
+            .preview.loading::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, transparent 0%, var(--border) 50%, transparent 100%);
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+            }
+
+            /* ── Features Grid ── */
             .features {
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 gap: 1px;
-                background: var(--border);
+                background: rgba(255, 255, 255, 0.06);
                 border: 1px solid var(--border);
                 border-radius: 10px;
+                animation: slideUp 0.6s 0.3s ease-out both;
                 overflow: hidden;
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
             }
 
             .feature {
-                background: var(--surface);
-                padding: 0.85rem 0.25rem;
+                background: rgba(255, 255, 255, 0.02);
+                padding: 1rem 0.5rem;
                 text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.4rem;
             }
-            .feature-icon {
-                font-size: 1.1rem;
-                margin-bottom: 0.3rem;
+
+            .feature-icon svg {
+                width: 20px;
+                height: 20px;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                fill: none;
             }
+
             .feature-title {
                 font-size: 0.65rem;
                 font-weight: 500;
                 color: var(--text);
-                margin-bottom: 0.1rem;
             }
+
             .feature-desc {
                 font-size: 0.55rem;
                 color: var(--text-muted);
             }
 
+            /* ── Footer ── */
             footer {
                 position: relative;
                 z-index: 1;
                 text-align: center;
-                padding: 1rem 1.5rem;
-                color: var(--text-muted);
+                padding: 1.5rem 1.5rem;
+                color: var(--text-dim);
                 font-size: 0.75rem;
             }
-            footer a { color: var(--text-muted); text-decoration: none; }
+
+            footer a { color: var(--text-dim); text-decoration: none; }
             footer a:hover { color: var(--text); }
 
+            /* ── Responsive ── */
             @media (max-width: 640px) {
                 main { padding: 2rem 1.25rem 1.5rem; }
-                .logo { font-size: 2.1rem; }
+                .logo { font-size: 3.2rem; }
                 .tagline { font-size: 0.9rem; }
-                .features { grid-template-columns: repeat(3, 1fr); }
             }
 
             @media (max-width: 420px) {
-                .logo { font-size: 1.8rem; }
+                main { padding: 1.5rem 1rem 1rem; }
+                .logo { font-size: 2.5rem; }
                 .tagline { font-size: 0.85rem; }
                 .install { padding: 0.65rem 0.85rem; }
                 .install code { font-size: 0.7rem; }
                 .features { grid-template-columns: repeat(2, 1fr); }
-                main { padding: 1.5rem 1rem 1rem; }
             }
         </style>
     </head>
@@ -218,8 +288,9 @@
 
         <main>
             <div class="hero">
-                <div class="logo">📦 contup</div>
-                <p class="tagline">Prebuilt <strong>container runtime</strong> binaries for Linux.<br>No repos. No dependencies. Just <strong>static binaries</strong>.</p>
+                <div class="logo">contup</div>
+                <p class="tagline">Prebuilt container runtime binaries for Linux</p>
+                <p class="tagline-sub">No repos. No dependencies. Just static binaries.</p>
             </div>
 
             <div class="install">
@@ -232,43 +303,42 @@
                 </button>
             </div>
 
-            <div class="preview">
-                <img src="https://raw.githubusercontent.com/diphyx/contup/main/showcase/gif/setup.gif" alt="contup setup" />
+            <div class="preview loading">
+                <img src="https://raw.githubusercontent.com/diphyx/contup/main/showcase/gif/setup.gif" alt="contup setup demo" loading="lazy" onload="this.parentElement.classList.remove('loading');this.parentElement.classList.add('visible')" />
             </div>
 
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">🐳</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#60a5fa"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
                     <div class="feature-title">Docker + Podman</div>
                     <div class="feature-desc">Both runtimes</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">👤</div>
-                    <div class="feature-title">Root & Rootless</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#4ade80"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <div class="feature-title">Root &amp; Rootless</div>
                     <div class="feature-desc">No sudo required</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🔧</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#f97316"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
                     <div class="feature-title">Static Binaries</div>
                     <div class="feature-desc">Official sources</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🔌</div>
-                    <div class="feature-title">Compose</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#a78bfa"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"/></svg></div>
+                    <div class="feature-title">Compose Included</div>
                     <div class="feature-desc">Out of the box</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">✈️</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#22d3ee"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
                     <div class="feature-title">Offline Install</div>
                     <div class="feature-desc">Air-gapped ready</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🚀</div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" stroke="#fb7185"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
                     <div class="feature-title">No Pkg Manager</div>
                     <div class="feature-desc">Works anywhere</div>
                 </div>
             </div>
-
         </main>
 
         <footer>

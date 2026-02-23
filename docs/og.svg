@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080c15"/>
+      <stop offset="100%" stop-color="#14161e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fafafa"/>
+      <stop offset="100%" stop-color="#d4d4d8"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="glassBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#accent)" opacity="0.7"/>
+
+  <!-- Title -->
+  <text x="600" y="195" font-family="system-ui,-apple-system,sans-serif" font-size="96" font-weight="800" fill="url(#titleGrad)" text-anchor="middle">contup</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="250" font-family="system-ui,-apple-system,sans-serif" font-size="26" fill="#a1a1aa" text-anchor="middle" font-weight="400">Prebuilt container runtime binaries for Linux</text>
+
+  <!-- Description -->
+  <text x="600" y="290" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#71717a" text-anchor="middle" font-weight="400">No repos. No dependencies. Just static binaries.</text>
+
+  <!-- Feature card: single card with 3x2 grid, line separators -->
+  <!-- Card: 568 x 174, starts at (316, 355) -->
+  <g transform="translate(316, 320)">
+    <rect width="568" height="174" rx="10" fill="url(#glass)" stroke="url(#glassBorder)" stroke-width="1"/>
+
+    <!-- Vertical separators -->
+    <line x1="189" y1="12" x2="189" y2="162" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+    <line x1="379" y1="12" x2="379" y2="162" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+
+    <!-- Horizontal separator -->
+    <line x1="12" y1="87" x2="556" y2="87" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+
+    <!-- Cell 1: Both Runtimes (0,0) — center=94 -->
+    <svg x="82" y="20" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+      <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+    </svg>
+    <text x="94" y="66" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">Docker + Podman</text>
+
+    <!-- Cell 2: Root Flexible (1,0) — center=284 -->
+    <svg x="272" y="20" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </svg>
+    <text x="284" y="66" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">Root &amp; Rootless</text>
+
+    <!-- Cell 3: Static Binaries (2,0) — center=474, Lucide "flame" -->
+    <svg x="462" y="20" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+    </svg>
+    <text x="474" y="66" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">Static Binaries</text>
+
+    <!-- Cell 4: Compose Ready (0,1) — center=94 -->
+    <svg x="82" y="107" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/>
+      <path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"/>
+    </svg>
+    <text x="94" y="153" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">Compose Included</text>
+
+    <!-- Cell 5: Offline Ready (1,1) — center=284 -->
+    <svg x="272" y="107" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+    </svg>
+    <text x="284" y="153" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">Offline Install</text>
+
+    <!-- Cell 6: No Pkg Manager (2,1) — center=474, Lucide "zap" -->
+    <svg x="462" y="107" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+    </svg>
+    <text x="474" y="153" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#d4d4d8" font-weight="500" text-anchor="middle">No Pkg Manager</text>
+  </g>
+
+  <!-- GitHub -->
+  <text x="600" y="575" font-family="system-ui,-apple-system,sans-serif" font-size="14" fill="#52525b" text-anchor="middle">github.com/diphyx/contup</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="627" width="1200" height="3" fill="url(#accent)" opacity="0.7"/>
+</svg>
