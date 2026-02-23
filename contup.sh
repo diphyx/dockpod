@@ -5,7 +5,7 @@ set -euo pipefail
 # Prebuilt container runtime binaries + CLI management tool for Linux
 # https://github.com/diphyx/contup
 
-CONTUP_VERSION="2.0.0 (38fef96)"
+CONTUP_VERSION="2.0.1 (098284c)"
 GITHUB_REPO="diphyx/contup"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
