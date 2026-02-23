@@ -26,6 +26,19 @@ Use `publish.sh` to bump the version and optionally trigger a CI workflow:
 | 2      | Push and trigger build workflow   |
 | 3      | Push and trigger release workflow |
 
+**Step 3 — Build inputs (only when build is selected):**
+
+| Input    | Option | Value  |
+| -------- | ------ | ------ |
+| Platform | 0      | both   |
+|          | 1      | amd64  |
+|          | 2      | arm64  |
+| Runtime  | 0      | both   |
+|          | 1      | docker |
+|          | 2      | podman |
+| Compose  | 0      | true   |
+|          | 1      | false  |
+
 ---
 
 ## 🔧 CI/CD Pipeline
