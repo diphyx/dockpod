@@ -312,7 +312,18 @@ check_newuidmap() {
     if command -v newuidmap &>/dev/null && command -v newgidmap &>/dev/null; then
         print_ok "newuidmap/newgidmap available"
     else
-        print_warn "newuidmap/newgidmap not found — rootless may not work"
+        print_fail "newuidmap/newgidmap not found — required for rootless mode"
+        local hint=""
+        case "${ID:-}" in
+            ubuntu|debian|pop|linuxmint) hint="sudo apt install uidmap" ;;
+            fedora)                      hint="sudo dnf install shadow-utils" ;;
+            centos|rhel|rocky|alma)      hint="sudo yum install shadow-utils" ;;
+            arch|manjaro)                hint="sudo pacman -S shadow" ;;
+            opensuse*|sles)              hint="sudo zypper install shadow" ;;
+            alpine)                      hint="sudo apk add shadow-uidmap" ;;
+        esac
+        [[ -n "$hint" ]] && print_dim "  Install: ${hint}"
+        return 1
     fi
 }
 
@@ -1208,7 +1219,7 @@ cmd_install() {
     check_cgroups || ((errors++))
     check_iptables
     check_systemd || ((errors++))
-    check_newuidmap
+    check_newuidmap || ((errors++))
 
     echo ""
     print_box "System Summary" \

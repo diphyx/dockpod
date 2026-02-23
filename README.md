@@ -71,7 +71,13 @@ No repos. No dependencies. No distro-specific packages. Just **static binaries**
 - 🔧 systemd
 - 📂 cgroups v2 (v1 supported with warnings)
 - 🔥 iptables or nftables
-- 👤 For rootless mode: `newuidmap` / `newgidmap`
+- 👤 For rootless mode: `newuidmap` / `newgidmap` (must be installed by an administrator)
+    - Ubuntu / Debian: `sudo apt install uidmap`
+    - Fedora: `sudo dnf install shadow-utils`
+    - CentOS / RHEL / Rocky / Alma: `sudo yum install shadow-utils`
+    - Arch / Manjaro: `sudo pacman -S shadow`
+    - openSUSE / SLES: `sudo zypper install shadow`
+    - Alpine: `sudo apk add shadow-uidmap`
 
 ---
 
