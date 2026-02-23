@@ -49,6 +49,17 @@ NEW="${VERSION} (${HASH})"
 sed -i.bak "s/CONTUP_VERSION=\".*\"/CONTUP_VERSION=\"${NEW}\"/" "$SCRIPT"
 rm -f "${SCRIPT}.bak"
 
+# shellcheck source=versions.env
+source versions.env
+
+sed -i.bak \
+    -e "s|contup-v[0-9]*\.[0-9]*\.[0-9]*-green|contup-v${VERSION}-green|" \
+    -e "s|Docker-v[0-9]*\.[0-9]*\.[0-9]*-blue|Docker-${DOCKER_VERSION}-blue|" \
+    -e "s|Podman-v[0-9]*\.[0-9]*\.[0-9]*-purple|Podman-${PODMAN_VERSION}-purple|" \
+    -e "s|Compose-v[0-9]*\.[0-9]*\.[0-9]*-blue|Compose-${COMPOSE_VERSION}-blue|" \
+    README.md
+rm -f README.md.bak
+
 echo ""
 echo "==> ${CURRENT} → ${NEW}"
 
