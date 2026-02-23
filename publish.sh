@@ -76,21 +76,31 @@ fi
 
 if [[ "$action" == "2" ]]; then
     echo ""
-    echo "Platform: 0) both  1) amd64  2) arm64"
+    echo "  0) both"
+    echo "  1) amd64"
+    echo "  2) arm64"
+    echo ""
     read -rp "Select platform [0-2]: " p
-    case "$p" in
+    case "${p:-0}" in
         1) PLATFORM="amd64" ;; 2) PLATFORM="arm64" ;; *) PLATFORM="both" ;;
     esac
 
-    echo "Runtime:  0) both  1) docker  2) podman"
+    echo ""
+    echo "  0) both"
+    echo "  1) docker"
+    echo "  2) podman"
+    echo ""
     read -rp "Select runtime [0-2]: " r
-    case "$r" in
+    case "${r:-0}" in
         1) RUNTIME="docker" ;; 2) RUNTIME="podman" ;; *) RUNTIME="both" ;;
     esac
 
-    echo "Compose:  0) true  1) false"
+    echo ""
+    echo "  0) true"
+    echo "  1) false"
+    echo ""
     read -rp "Include compose [0-1]: " c
-    case "$c" in
+    case "${c:-0}" in
         1) COMPOSE="false" ;; *) COMPOSE="true" ;;
     esac
 
