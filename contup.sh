@@ -1569,7 +1569,10 @@ cmd_uninstall() {
             fi
             for d in "${docker_dirs[@]}"; do
                 umount -R "$d" 2>/dev/null || true
-                rm -rf "$d"
+                if [[ "$IS_ROOT" != true ]] && command -v rootlesskit &>/dev/null; then
+                    rootlesskit rm -rf "$d" 2>/dev/null || true
+                fi
+                rm -rf "$d" 2>/dev/null || true
             done
             print_ok "Removed Docker data"
         fi
@@ -1581,7 +1584,10 @@ cmd_uninstall() {
                 podman_dir="${HOME}/.local/share/containers"
             fi
             umount -R "$podman_dir" 2>/dev/null || true
-            rm -rf "$podman_dir"
+            if [[ "$IS_ROOT" != true ]] && command -v rootlesskit &>/dev/null; then
+                rootlesskit rm -rf "$podman_dir" 2>/dev/null || true
+            fi
+            rm -rf "$podman_dir" 2>/dev/null || true
             print_ok "Removed Podman data"
         fi
     fi
