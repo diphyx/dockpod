@@ -32,7 +32,7 @@ read -rp "Select bump type [0-3]: " choice
 
 # ─── Bump ───
 
-case "$choice" in
+case "${choice:-0}" in
     0) ;;
     1) HOTFIX=$((HOTFIX + 1)) ;;
     2) MINOR=$((MINOR + 1)); HOTFIX=0 ;;
@@ -64,6 +64,8 @@ echo "  3) release  → push and trigger release workflow"
 echo ""
 read -rp "Select action [0-3]: " action
 
+action="${action:-0}"
+
 if [[ "$action" =~ ^[1-3]$ ]]; then
     git add -A
     git commit -m "Bump version to ${VERSION}"
@@ -73,8 +75,32 @@ if [[ "$action" =~ ^[1-3]$ ]]; then
 fi
 
 if [[ "$action" == "2" ]]; then
-    gh workflow run build.yml -f version="$TAG"
-    echo "==> Triggered build workflow"
+    echo ""
+    echo "Platform: 0) both  1) amd64  2) arm64"
+    read -rp "Select platform [0-2]: " p
+    case "$p" in
+        1) PLATFORM="amd64" ;; 2) PLATFORM="arm64" ;; *) PLATFORM="both" ;;
+    esac
+
+    echo "Runtime:  0) both  1) docker  2) podman"
+    read -rp "Select runtime [0-2]: " r
+    case "$r" in
+        1) RUNTIME="docker" ;; 2) RUNTIME="podman" ;; *) RUNTIME="both" ;;
+    esac
+
+    echo "Compose:  0) true  1) false"
+    read -rp "Include compose [0-1]: " c
+    case "$c" in
+        1) COMPOSE="false" ;; *) COMPOSE="true" ;;
+    esac
+
+    gh workflow run build.yml \
+        -f version="$TAG" \
+        -f platform="$PLATFORM" \
+        -f runtime="$RUNTIME" \
+        -f compose="$COMPOSE"
+    echo ""
+    echo "==> Triggered build workflow (${PLATFORM}, ${RUNTIME}, compose=${COMPOSE})"
 elif [[ "$action" == "3" ]]; then
     gh workflow run release.yml -f version="$TAG"
     echo "==> Triggered release workflow"
