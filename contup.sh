@@ -1006,7 +1006,7 @@ install_shell_wrapper() {
     local wrapper
     read -r -d '' wrapper <<'WRAPPER' || true
 contup() { # contup: shell-wrapper
-    command contup "$@"; local _rc=$?
+    CONTUP_WRAPPER=1 command contup "$@"; local _rc=$?
     if [[ "$1" == "switch" && $_rc -eq 0 ]]; then
         local _l; _l=$(grep '# contup: DOCKER_HOST' /etc/profile.d/contup.sh ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | head -1)
         [[ -n "$_l" ]] && eval "${_l#*:}"
@@ -1795,8 +1795,16 @@ cmd_switch() {
     esac
 
     echo ""
-    print_box "${S_OK} Switched to ${target^}" \
-        "DOCKER_HOST=${socket}"
+    if [[ -n "${CONTUP_WRAPPER:-}" ]]; then
+        print_box "${S_OK} Switched to ${target^}" \
+            "DOCKER_HOST=${socket}"
+    else
+        print_box "${S_OK} Switched to ${target^}" \
+            "DOCKER_HOST=${socket}" \
+            "" \
+            "Run: ${C_BOLD}export DOCKER_HOST=\"${socket}\"${C_RESET}" \
+            "Or restart your shell to apply"
+    fi
 }
 
 cmd_test() {
