@@ -21,11 +21,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: contup-amd64
+          name: dockpod-amd64
           path: artifacts
 
       - name: Find tarball
         run: .github/scripts/find-tarball.sh
 
-      - name: Verify contup ${{ matrix.runtime }}
-        run: sudo .github/scripts/verify-contup.sh "${{ env.TARBALL }}" "${{ matrix.runtime }}"
+      - name: Verify dockpod ${{ matrix.runtime }}
+        run: sudo .github/scripts/verify-dockpod.sh "${{ env.TARBALL }}" "${{ matrix.runtime }}"

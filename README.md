@@ -1,38 +1,38 @@
-# 📦 contup
+# 📦 dockpod
 
-[![contup](https://img.shields.io/badge/contup-v2.0.2-green)](https://github.com/diphyx/contup/releases)
+[![dockpod](https://img.shields.io/badge/dockpod-v2.0.2-green)](https://github.com/diphyx/dockpod/releases)
 [![Docker](https://img.shields.io/badge/Docker-v29.2.1-blue)](https://github.com/moby/moby)
 [![Podman](https://img.shields.io/badge/Podman-v5.8.0-purple)](https://github.com/containers/podman)
 [![Compose](https://img.shields.io/badge/Compose-v5.0.2-blue)](https://github.com/docker/compose)
 
-> **cont**ainer **up** — Prebuilt container runtime binaries for Linux with an interactive installer.
+> **dock**er + **pod**man, quick setup — Prebuilt container runtime binaries for Linux with an interactive installer.
 
-Static builds of **Docker**, **Podman**, and **Docker Compose** — compiled from official sources, bundled into architecture-specific tarballs, and published to [GitHub Releases](https://github.com/diphyx/contup/releases).
+Static builds of **Docker**, **Podman**, and **Docker Compose** — compiled from official sources, bundled into architecture-specific tarballs, and published to [GitHub Releases](https://github.com/diphyx/dockpod/releases).
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-curl -fsSL diphyx.github.io/contup/setup.sh | bash
+curl -fsSL diphyx.github.io/dockpod/setup.sh | bash
 ```
 
 ### Install a runtime
 
 ```bash
 # Install Docker + Compose
-contup install docker
+dockpod install docker
 
 # Install Podman + Compose
-contup install podman
+dockpod install podman
 
 # Install both Docker and Podman + Compose
-contup install both
+dockpod install both
 ```
 
 ---
 
-## 🤔 Why contup?
+## 🤔 Why dockpod?
 
 No repos. No dependencies. No distro-specific packages. Just **static binaries** from official sources.
 
@@ -98,21 +98,21 @@ sudo zypper install shadow
 sudo apk add shadow-uidmap
 ```
 
-> contup automatically detects missing prerequisites during install and shows the exact commands to fix them.
+> dockpod automatically detects missing prerequisites during install and shows the exact commands to fix them.
 
 ---
 
 ## 💻 Usage
 
 ```
-contup <command> [runtime] [flags]
+dockpod <command> [runtime] [flags]
 ```
 
 ### Commands
 
 | Command     | Arguments                | Description                     |
 | ----------- | ------------------------ | ------------------------------- |
-| `setup`     |                          | Install contup CLI only         |
+| `setup`     |                          | Install dockpod CLI only         |
 | `install`   | `[docker\|podman\|both]` | Install container runtime       |
 | `uninstall` | `[docker\|podman\|both]` | Remove runtime and configs      |
 | `update`    | `[docker\|podman\|both]` | Update to latest version        |
@@ -140,31 +140,31 @@ contup <command> [runtime] [flags]
 
 ```bash
 # Install Docker with Compose (interactive)
-contup install docker
+dockpod install docker
 
 # Install Podman non-interactively
-contup install podman -y
+dockpod install podman -y
 
 # Install both Docker and Podman
-contup install both
+dockpod install both
 
 # Switch active runtime to Podman
-contup switch podman
+dockpod switch podman
 
 # Update all installed runtimes
-contup update
+dockpod update
 
 # Run tests against installed runtimes
-contup test
+dockpod test
 
 # Show current status
-contup status
+dockpod status
 
 # Show detailed system and runtime info
-contup info
+dockpod info
 
 # Offline install from extracted tarball
-contup install docker --offline
+dockpod install docker --offline
 ```
 
 ---
@@ -173,7 +173,7 @@ contup install docker --offline
 
 ### 🛡️ Root
 
-When run as root (or with `sudo`), contup installs to:
+When run as root (or with `sudo`), dockpod installs to:
 
 | Path                                 | Purpose              |
 | ------------------------------------ | -------------------- |
@@ -185,7 +185,7 @@ When run as root (or with `sudo`), contup installs to:
 
 ### 👤 Rootless
 
-When run as a regular user, contup installs to:
+When run as a regular user, dockpod installs to:
 
 | Path                      | Purpose              |
 | ------------------------- | -------------------- |
@@ -235,37 +235,37 @@ When run as a regular user, contup installs to:
 | ---------------- | --------------------------------------------------- |
 | `docker-compose` | [docker/compose](https://github.com/docker/compose) |
 
-> Installed as a standalone binary and as a Docker CLI plugin (`docker compose`). Works with both Docker and Podman — when Podman is installed, contup automatically creates a `podman-compose` symlink to `docker-compose`.
+> Installed as a standalone binary and as a Docker CLI plugin (`docker compose`). Works with both Docker and Podman — when Podman is installed, dockpod automatically creates a `podman-compose` symlink to `docker-compose`.
 
 ---
 
 ## 🔀 Runtime Switching
 
-When both Docker and Podman are installed, `contup switch` changes the `DOCKER_HOST` environment variable to point to the selected runtime's socket:
+When both Docker and Podman are installed, `dockpod switch` changes the `DOCKER_HOST` environment variable to point to the selected runtime's socket:
 
 ```bash
 # Switch to Podman
-contup switch podman
+dockpod switch podman
 
 # Switch back to Docker
-contup switch docker
+dockpod switch docker
 ```
 
-> During installation, contup adds a shell wrapper function that automatically reloads environment variables after switching — no manual `source ~/.bashrc` needed.
+> During installation, dockpod adds a shell wrapper function that automatically reloads environment variables after switching — no manual `source ~/.bashrc` needed.
 
 ---
 
 ## ✈️ Offline Installation
 
-Download a release tarball, extract it, and run contup with `--offline`:
+Download a release tarball, extract it, and run dockpod with `--offline`:
 
 ```bash
 # Extract the tarball
-tar -xzf contup-v1.0.0-amd64.tar.gz
-cd contup-v1.0.0-amd64
+tar -xzf dockpod-v1.0.0-amd64.tar.gz
+cd dockpod-v1.0.0-amd64
 
 # Install using bundled binaries
-./contup.sh install docker --offline
+./dockpod.sh install docker --offline
 ```
 
 ---

@@ -5,21 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <!-- Title & Description -->
-        <title>contup — Prebuilt Container Runtime Binaries for Linux</title>
+        <title>dockpod — Prebuilt Container Runtime Binaries for Linux</title>
         <meta name="description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed, rootless support included." />
 
         <!-- Open Graph -->
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://diphyx.github.io/contup/" />
-        <meta property="og:title" content="contup — Prebuilt Container Runtime Binaries for Linux" />
+        <meta property="og:url" content="https://diphyx.github.io/dockpod/" />
+        <meta property="og:title" content="dockpod — Prebuilt Container Runtime Binaries for Linux" />
         <meta property="og:description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed, rootless support included." />
-        <meta property="og:image" content="https://raw.githubusercontent.com/diphyx/contup/main/docs/og.png" />
+        <meta property="og:image" content="https://raw.githubusercontent.com/diphyx/dockpod/main/docs/og.png" />
 
         <!-- Twitter Card -->
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="contup — Prebuilt Container Runtime Binaries for Linux" />
+        <meta name="twitter:title" content="dockpod — Prebuilt Container Runtime Binaries for Linux" />
         <meta name="twitter:description" content="Install Docker and Podman on any Linux system with a single command. Static binaries, no package manager needed." />
-        <meta name="twitter:image" content="https://raw.githubusercontent.com/diphyx/contup/main/docs/og.png" />
+        <meta name="twitter:image" content="https://raw.githubusercontent.com/diphyx/dockpod/main/docs/og.png" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -288,13 +288,13 @@
 
         <main>
             <div class="hero">
-                <div class="logo">contup</div>
+                <div class="logo">dockpod</div>
                 <p class="tagline">Prebuilt container runtime binaries for Linux</p>
                 <p class="tagline-sub">No repos. No dependencies. Just static binaries.</p>
             </div>
 
             <div class="install">
-                <code><span class="dim">$</span> curl -fsSL diphyx.github.io/contup/setup.sh | bash</code>
+                <code><span class="dim">$</span> curl -fsSL diphyx.github.io/dockpod/setup.sh | bash</code>
                 <button onclick="copy(this)" aria-label="Copy">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -304,7 +304,7 @@
             </div>
 
             <div class="preview loading">
-                <img src="https://raw.githubusercontent.com/diphyx/contup/main/showcase/gif/setup.gif" alt="contup setup demo" loading="lazy" onload="this.parentElement.classList.remove('loading');this.parentElement.classList.add('visible')" />
+                <img src="https://raw.githubusercontent.com/diphyx/dockpod/main/showcase/gif/setup.gif" alt="dockpod setup demo" loading="lazy" onload="this.parentElement.classList.remove('loading');this.parentElement.classList.add('visible')" />
             </div>
 
             <div class="features">
@@ -342,12 +342,12 @@
         </main>
 
         <footer>
-            <a href="https://github.com/diphyx/contup">GitHub</a>
+            <a href="https://github.com/diphyx/dockpod">GitHub</a>
         </footer>
 
         <script>
             function copy(btn) {
-                navigator.clipboard.writeText("curl -fsSL diphyx.github.io/contup/setup.sh | bash");
+                navigator.clipboard.writeText("curl -fsSL diphyx.github.io/dockpod/setup.sh | bash");
                 const svg = btn.querySelector("svg");
                 svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
                 setTimeout(() => {

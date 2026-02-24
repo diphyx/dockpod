@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Update CONTUP_VERSION in contup.sh
+# Update DOCKPOD_VERSION in dockpod.sh
 # Usage: publish.sh
 
-SCRIPT="contup.sh"
+SCRIPT="dockpod.sh"
 
 # ─── Validate ───
 
@@ -15,7 +15,7 @@ fi
 
 # ─── Parse current version ───
 
-CURRENT=$(sed -n 's/^CONTUP_VERSION="\(.*\)"/\1/p' "$SCRIPT")
+CURRENT=$(sed -n 's/^DOCKPOD_VERSION="\(.*\)"/\1/p' "$SCRIPT")
 CURRENT_VER="${CURRENT%% *}"
 IFS='.' read -r MAJOR MINOR HOTFIX <<< "$CURRENT_VER"
 
@@ -46,14 +46,14 @@ VERSION="${MAJOR}.${MINOR}.${HOTFIX}"
 HASH=$(git rev-parse --short HEAD)
 NEW="${VERSION} (${HASH})"
 
-sed -i.bak "s/CONTUP_VERSION=\".*\"/CONTUP_VERSION=\"${NEW}\"/" "$SCRIPT"
+sed -i.bak "s/DOCKPOD_VERSION=\".*\"/DOCKPOD_VERSION=\"${NEW}\"/" "$SCRIPT"
 rm -f "${SCRIPT}.bak"
 
 # shellcheck source=versions.env
 source versions.env
 
 sed -i.bak \
-    -e "s|contup-v[0-9]*\.[0-9]*\.[0-9]*-green|contup-v${VERSION}-green|" \
+    -e "s|dockpod-v[0-9]*\.[0-9]*\.[0-9]*-green|dockpod-v${VERSION}-green|" \
     -e "s|Docker-v[0-9]*\.[0-9]*\.[0-9]*-blue|Docker-${DOCKER_VERSION}-blue|" \
     -e "s|Podman-v[0-9]*\.[0-9]*\.[0-9]*-purple|Podman-${PODMAN_VERSION}-purple|" \
     -e "s|Compose-v[0-9]*\.[0-9]*\.[0-9]*-blue|Compose-${COMPOSE_VERSION}-blue|" \

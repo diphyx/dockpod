@@ -9,9 +9,9 @@ ARCH="${2:?Usage: bundle-tarball.sh <release-tag> <arch> [runtime]}"
 RUNTIME="${3:-both}"
 COMPOSE="${4:-true}"
 
-BUNDLE="/tmp/contup-bundle"
+BUNDLE="/tmp/dockpod-bundle"
 
-echo "==> Bundling contup-${RELEASE_TAG}-${ARCH} (${RUNTIME})..."
+echo "==> Bundling dockpod-${RELEASE_TAG}-${ARCH} (${RUNTIME})..."
 
 mkdir -p "${BUNDLE}"
 
@@ -50,8 +50,8 @@ cp /tmp/slirp4netns/slirp4netns                    "${BUNDLE}/podman/"
 cp /tmp/fuse-overlayfs/fuse-overlayfs               "${BUNDLE}/podman/"
 fi
 
-# contup.sh
-cp contup.sh "${BUNDLE}/"
+# dockpod.sh
+cp dockpod.sh "${BUNDLE}/"
 
 # Strip binaries
 echo "  Stripping binaries..."
@@ -62,10 +62,10 @@ fi
 find "${BUNDLE}" -type f -executable ! -name "*.sh" -exec $STRIP_CMD {} \; 2>/dev/null || true
 
 # Create tarball
-TARBALL="contup-${RELEASE_TAG}-${ARCH}.tar.gz"
-TARBALL_DIR="contup-${RELEASE_TAG}-${ARCH}"
+TARBALL="dockpod-${RELEASE_TAG}-${ARCH}.tar.gz"
+TARBALL_DIR="dockpod-${RELEASE_TAG}-${ARCH}"
 cd /tmp
-mv contup-bundle "$TARBALL_DIR"
+mv dockpod-bundle "$TARBALL_DIR"
 tar -czf "${TARBALL}" "$TARBALL_DIR"
 
 # Checksum

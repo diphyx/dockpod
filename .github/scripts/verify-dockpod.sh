@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Integration test for the contup CLI.
+# Integration test for the dockpod CLI.
 # Exercises install, test, status, info, switch, stop, start, restart, uninstall.
 # Must run as root on amd64.
-# Usage: verify-contup.sh <path-to-tarball> <runtime>
+# Usage: verify-dockpod.sh <path-to-tarball> <runtime>
 
-TARBALL="${1:?Usage: verify-contup.sh <path-to-tarball> <runtime>}"
-RUNTIME="${2:?Usage: verify-contup.sh <path-to-tarball> <runtime>}"
+TARBALL="${1:?Usage: verify-dockpod.sh <path-to-tarball> <runtime>}"
+RUNTIME="${2:?Usage: verify-dockpod.sh <path-to-tarball> <runtime>}"
 
 pass=0
 fail=0
@@ -26,46 +26,46 @@ run_step() {
     fi
 }
 
-# ─── Extract tarball and setup contup ───
+# ─── Extract tarball and setup dockpod ───
 
 echo "==> Extracting ${TARBALL}..."
-EXTRACT_DIR=$(mktemp -d /tmp/contup-extract.XXXXXX)
+EXTRACT_DIR=$(mktemp -d /tmp/dockpod-extract.XXXXXX)
 tar -xzf "$TARBALL" --strip-components=1 -C "$EXTRACT_DIR"
 
-CONTUP="${EXTRACT_DIR}/contup.sh"
-chmod +x "$CONTUP"
+DOCKPOD="${EXTRACT_DIR}/dockpod.sh"
+chmod +x "$DOCKPOD"
 
 # ─── Install ───
 
-run_step "contup install ${RUNTIME}" $CONTUP install "$RUNTIME" -y
+run_step "dockpod install ${RUNTIME}" $DOCKPOD install "$RUNTIME" -y
 
 # ─── Test ───
 
-run_step "contup test ${RUNTIME}" $CONTUP test "$RUNTIME"
+run_step "dockpod test ${RUNTIME}" $DOCKPOD test "$RUNTIME"
 
 # ─── Status ───
 
-run_step "contup status" $CONTUP status
+run_step "dockpod status" $DOCKPOD status
 
 # ─── Info ───
 
-run_step "contup info" $CONTUP info
+run_step "dockpod info" $DOCKPOD info
 
 # ─── Stop ───
 
-run_step "contup stop ${RUNTIME}" $CONTUP stop "$RUNTIME"
+run_step "dockpod stop ${RUNTIME}" $DOCKPOD stop "$RUNTIME"
 
 # ─── Start ───
 
-run_step "contup start ${RUNTIME}" $CONTUP start "$RUNTIME"
+run_step "dockpod start ${RUNTIME}" $DOCKPOD start "$RUNTIME"
 
 # ─── Restart ───
 
-run_step "contup restart ${RUNTIME}" $CONTUP restart "$RUNTIME"
+run_step "dockpod restart ${RUNTIME}" $DOCKPOD restart "$RUNTIME"
 
 # ─── Switch ───
 
-run_step "contup switch ${RUNTIME}" $CONTUP switch "$RUNTIME"
+run_step "dockpod switch ${RUNTIME}" $DOCKPOD switch "$RUNTIME"
 
 # ─── Pre-uninstall cleanup (CI only: release overlay mounts) ───
 
@@ -80,7 +80,7 @@ fi
 
 # ─── Uninstall ───
 
-run_step "contup uninstall ${RUNTIME}" $CONTUP uninstall "$RUNTIME" -y
+run_step "dockpod uninstall ${RUNTIME}" $DOCKPOD uninstall "$RUNTIME" -y
 
 # ─── Cleanup ───
 

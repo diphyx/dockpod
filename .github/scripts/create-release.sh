@@ -14,7 +14,7 @@ echo "==> Creating release ${TAG}..."
 gh release create "$TAG" \
     --title "${TAG}" \
     --notes "$(cat <<EOF
-## 📦 contup ${TAG}
+## 📦 dockpod ${TAG}
 
 Prebuilt static container runtime binaries for Linux.
 
@@ -30,13 +30,13 @@ Prebuilt static container runtime binaries for Linux.
 
 | Architecture | Tarball |
 |---|---|
-| x86_64 (amd64) | \`contup-${TAG}-amd64.tar.gz\` |
-| aarch64 (arm64) | \`contup-${TAG}-arm64.tar.gz\` |
+| x86_64 (amd64) | \`dockpod-${TAG}-amd64.tar.gz\` |
+| aarch64 (arm64) | \`dockpod-${TAG}-arm64.tar.gz\` |
 
 ### 🚀 Quick Install
 
 \`\`\`bash
-curl -fsSL https://raw.githubusercontent.com/diphyx/contup/main/contup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/diphyx/dockpod/main/dockpod.sh | bash
 \`\`\`
 
 ### ✅ Verify Checksums
@@ -46,7 +46,7 @@ sha256sum -c checksums.txt
 \`\`\`
 EOF
 )" \
-    artifacts/contup-*.tar.gz \
+    artifacts/dockpod-*.tar.gz \
     artifacts/checksums.txt
 
 echo "==> Release ${TAG} created"

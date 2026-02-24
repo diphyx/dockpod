@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# contup — container up
+# dockpod — docker + podman, quick setup
 # Prebuilt container runtime binaries + CLI management tool for Linux
-# https://github.com/diphyx/contup
+# https://github.com/diphyx/dockpod
 
-CONTUP_VERSION="2.0.2 (ed40e03)"
-GITHUB_REPO="diphyx/contup"
+DOCKPOD_VERSION="2.0.2 (ed40e03)"
+GITHUB_REPO="diphyx/dockpod"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
 # Binaries
@@ -49,7 +49,7 @@ CONFIG_DIR_DOCKER=""
 CONFIG_DIR_PODMAN=""
 SYSTEMD_DIR=""
 CLI_PLUGINS_DIR=""
-TMPDIR_CONTUP=""
+TMPDIR_DOCKPOD=""
 
 # Sockets
 DOCKER_HOST_SOCKET=""
@@ -65,8 +65,8 @@ FLAG_NO_VERIFY=false
 
 print_banner() {
     echo -e "${C_BOLD}"
-    echo "  contup — container up"
-    echo -e "${C_DIM}  v${CONTUP_VERSION}${C_RESET}"
+    echo "  dockpod — docker + podman, quick setup"
+    echo -e "${C_DIM}  v${DOCKPOD_VERSION}${C_RESET}"
     echo ""
 }
 
@@ -224,7 +224,7 @@ detect_arch() {
 
 detect_os() {
     if [[ "$(uname -s)" != "Linux" ]]; then
-        die "contup only supports Linux (detected: $(uname -s))"
+        die "dockpod only supports Linux (detected: $(uname -s))"
     fi
 
     KERNEL_VERSION=$(uname -r)
@@ -449,7 +449,7 @@ detect_mode() {
         if [[ -d "${script_dir}/docker" ]] || [[ -d "${script_dir}/podman" ]]; then
             echo "bundled"
         else
-            die "Offline mode requested but no bundled binaries found next to contup.sh"
+            die "Offline mode requested but no bundled binaries found next to dockpod.sh"
         fi
     elif [[ -d "${script_dir}/docker" ]] || [[ -d "${script_dir}/podman" ]]; then
         echo "bundled"
@@ -460,7 +460,7 @@ detect_mode() {
 
 fetch_latest_release() {
     local api_url="${GITHUB_API}/releases/latest"
-    local tmp_file="/tmp/contup-release-$$.json"
+    local tmp_file="/tmp/dockpod-release-$$.json"
 
     print_info "Fetching latest release..." >&2
     if ! curl -fsSL "$api_url" -o "$tmp_file"; then
@@ -554,19 +554,19 @@ install_self() {
     local src_dir="$1"
     mkdir -p "$BIN_DIR"
 
-    if [[ -f "${src_dir}/contup.sh" ]]; then
-        cp "${src_dir}/contup.sh" "${BIN_DIR}/contup"
+    if [[ -f "${src_dir}/dockpod.sh" ]]; then
+        cp "${src_dir}/dockpod.sh" "${BIN_DIR}/dockpod"
     else
-        # curl | bash mode — download contup.sh from GitHub
-        local url="https://raw.githubusercontent.com/${GITHUB_REPO}/main/contup.sh"
-        curl -fsSL -o "${BIN_DIR}/contup" "$url" || {
-            print_warn "Failed to download contup"
+        # curl | bash mode — download dockpod.sh from GitHub
+        local url="https://raw.githubusercontent.com/${GITHUB_REPO}/main/dockpod.sh"
+        curl -fsSL -o "${BIN_DIR}/dockpod" "$url" || {
+            print_warn "Failed to download dockpod"
             return 1
         }
     fi
 
-    chmod +x "${BIN_DIR}/contup"
-    print_ok "Installed contup to ${BIN_DIR}"
+    chmod +x "${BIN_DIR}/dockpod"
+    print_ok "Installed dockpod to ${BIN_DIR}"
 }
 
 install_cli_plugins() {
@@ -948,11 +948,11 @@ file_remove() {
 
 update_shell_profile() {
     local var_name="$1" var_value="$2"
-    local marker="# contup: ${var_name}"
+    local marker="# dockpod: ${var_name}"
     local line="export ${var_name}=\"${var_value}\" ${marker}"
 
     if [[ "$IS_ROOT" == true ]]; then
-        local profile="/etc/profile.d/contup.sh"
+        local profile="/etc/profile.d/dockpod.sh"
         mkdir -p /etc/profile.d
         # Remove old entry
         file_remove "$profile" "$marker"
@@ -974,10 +974,10 @@ update_shell_profile() {
 
 remove_shell_profile_var() {
     local var_name="$1"
-    local marker="# contup: ${var_name}"
+    local marker="# dockpod: ${var_name}"
 
     if [[ "$IS_ROOT" == true ]]; then
-        local profile="/etc/profile.d/contup.sh"
+        local profile="/etc/profile.d/dockpod.sh"
         file_remove "$profile" "$marker"
         # Remove file if empty
         if [[ -f "$profile" ]] && [[ ! -s "$profile" ]]; then
@@ -1001,22 +1001,22 @@ ensure_path() {
 }
 
 install_shell_wrapper() {
-    local marker="# contup: shell-wrapper"
-    local marker_end="# contup: shell-wrapper-end"
+    local marker="# dockpod: shell-wrapper"
+    local marker_end="# dockpod: shell-wrapper-end"
     local wrapper
     read -r -d '' wrapper <<'WRAPPER' || true
-contup() { # contup: shell-wrapper
-    CONTUP_WRAPPER=1 command contup "$@"; local _rc=$?
+dockpod() { # dockpod: shell-wrapper
+    DOCKPOD_WRAPPER=1 command dockpod "$@"; local _rc=$?
     if [[ "$1" == "switch" && $_rc -eq 0 ]]; then
-        local _l; _l=$(grep '# contup: DOCKER_HOST' /etc/profile.d/contup.sh ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | head -1)
+        local _l; _l=$(grep '# dockpod: DOCKER_HOST' /etc/profile.d/dockpod.sh ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | head -1)
         [[ -n "$_l" ]] && eval "${_l#*:}"
     fi
     return $_rc
-} # contup: shell-wrapper-end
+} # dockpod: shell-wrapper-end
 WRAPPER
 
     if [[ "$IS_ROOT" == true ]]; then
-        local profile="/etc/profile.d/contup.sh"
+        local profile="/etc/profile.d/dockpod.sh"
         mkdir -p /etc/profile.d
         file_remove "$profile" "$marker" "$marker_end"
         echo "$wrapper" >> "$profile"
@@ -1028,15 +1028,15 @@ WRAPPER
             fi
         done
     fi
-    print_ok "Installed contup shell wrapper (switch works without restart)"
+    print_ok "Installed dockpod shell wrapper (switch works without restart)"
 }
 
 remove_shell_wrapper() {
-    local marker="# contup: shell-wrapper"
-    local marker_end="# contup: shell-wrapper-end"
+    local marker="# dockpod: shell-wrapper"
+    local marker_end="# dockpod: shell-wrapper-end"
 
     if [[ "$IS_ROOT" == true ]]; then
-        local profile="/etc/profile.d/contup.sh"
+        local profile="/etc/profile.d/dockpod.sh"
         file_remove "$profile" "$marker" "$marker_end"
         if [[ -f "$profile" ]] && [[ ! -s "$profile" ]]; then
             rm -f "$profile"
@@ -1205,13 +1205,13 @@ verify_compose() {
 ## Cleanup
 
 setup_tmpdir() {
-    TMPDIR_CONTUP=$(mktemp -d /tmp/contup.XXXXXX)
+    TMPDIR_DOCKPOD=$(mktemp -d /tmp/dockpod.XXXXXX)
     trap cleanup_tmpdir EXIT
 }
 
 cleanup_tmpdir() {
-    if [[ -n "$TMPDIR_CONTUP" ]] && [[ -d "$TMPDIR_CONTUP" ]]; then
-        rm -rf "$TMPDIR_CONTUP"
+    if [[ -n "$TMPDIR_DOCKPOD" ]] && [[ -d "$TMPDIR_DOCKPOD" ]]; then
+        rm -rf "$TMPDIR_DOCKPOD"
     fi
 }
 
@@ -1221,19 +1221,19 @@ cmd_setup() {
     print_banner
     detect_install_mode
 
-    print_info "Installing contup CLI..."
+    print_info "Installing dockpod CLI..."
     install_self ""
     ensure_path
     install_shell_wrapper
 
     echo ""
     if [[ ":${PATH}:" != *":${BIN_DIR}:"* ]]; then
-        print_box "${S_OK} contup CLI installed" \
+        print_box "${S_OK} dockpod CLI installed" \
             "Run:  ${C_BOLD}export PATH=\"${BIN_DIR}:\$PATH\"${C_RESET}" \
-            "Then: ${C_BOLD}contup install${C_RESET} <docker|podman>"
+            "Then: ${C_BOLD}dockpod install${C_RESET} <docker|podman>"
     else
-        print_box "${S_OK} contup CLI installed" \
-            "Next: ${C_BOLD}contup install${C_RESET} <docker|podman>"
+        print_box "${S_OK} dockpod CLI installed" \
+            "Next: ${C_BOLD}dockpod install${C_RESET} <docker|podman>"
     fi
 }
 
@@ -1330,7 +1330,7 @@ cmd_install() {
         release_json=$(fetch_latest_release)
 
         local tarball_url
-        tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*contup-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
+        tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*dockpod-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
 
         if [[ -z "$tarball_url" ]]; then
             die "No tarball found for architecture: ${ARCH}"
@@ -1342,7 +1342,7 @@ cmd_install() {
         local checksum_url
         checksum_url=$(echo "$release_json" | grep -o '"browser_download_url": *"[^"]*checksums[^"]*"' | grep -o 'https://[^"]*' || true)
 
-        download_tarball "$tarball_url" "${TMPDIR_CONTUP}/${tarball_name}"
+        download_tarball "$tarball_url" "${TMPDIR_DOCKPOD}/${tarball_name}"
 
         if [[ -n "$checksum_url" ]]; then
             local checksums
@@ -1351,13 +1351,13 @@ cmd_install() {
                 local expected
                 expected=$(echo "$checksums" | grep "$tarball_name" | awk '{print $1}')
                 if [[ -n "$expected" ]]; then
-                    verify_checksum "${TMPDIR_CONTUP}/${tarball_name}" "$expected"
+                    verify_checksum "${TMPDIR_DOCKPOD}/${tarball_name}" "$expected"
                 fi
             fi
         fi
 
-        src_dir="${TMPDIR_CONTUP}/extracted"
-        extract_binaries "${TMPDIR_CONTUP}/${tarball_name}" "$src_dir"
+        src_dir="${TMPDIR_DOCKPOD}/extracted"
+        extract_binaries "${TMPDIR_DOCKPOD}/${tarball_name}" "$src_dir"
     fi
 
     # Step 5 — Install Binaries
@@ -1380,7 +1380,7 @@ cmd_install() {
     print_info "Installing Compose..."
     install_binaries "$src_dir" "compose"
 
-    # Install contup.sh itself
+    # Install dockpod.sh itself
     install_self "$src_dir"
 
     ensure_path
@@ -1472,7 +1472,7 @@ cmd_install() {
         summary_lines+=("  podman run -it alpine sh")
     fi
 
-    print_box "${S_OK} contup — install complete" "${summary_lines[@]}"
+    print_box "${S_OK} dockpod — install complete" "${summary_lines[@]}"
 }
 
 cmd_uninstall() {
@@ -1481,7 +1481,7 @@ cmd_uninstall() {
     print_banner
 
     if [[ -z "$runtime" ]]; then
-        die "Usage: contup uninstall <docker|podman|both>"
+        die "Usage: dockpod uninstall <docker|podman|both>"
     fi
 
     detect_install_mode
@@ -1645,7 +1645,7 @@ cmd_update() {
     release_json=$(fetch_latest_release)
 
     local tarball_url
-    tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*contup-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
+    tarball_url=$(echo "$release_json" | grep -o "\"browser_download_url\": *\"[^\"]*dockpod-[^\"]*-${ARCH}.tar.gz\"" | grep -o 'https://[^"]*' || true)
 
     if [[ -z "$tarball_url" ]]; then
         die "No tarball found for architecture: ${ARCH}"
@@ -1654,10 +1654,10 @@ cmd_update() {
     local tarball_name
     tarball_name=$(basename "$tarball_url")
 
-    download_tarball "$tarball_url" "${TMPDIR_CONTUP}/${tarball_name}"
+    download_tarball "$tarball_url" "${TMPDIR_DOCKPOD}/${tarball_name}"
 
-    local src_dir="${TMPDIR_CONTUP}/extracted"
-    extract_binaries "${TMPDIR_CONTUP}/${tarball_name}" "$src_dir"
+    local src_dir="${TMPDIR_DOCKPOD}/extracted"
+    extract_binaries "${TMPDIR_DOCKPOD}/${tarball_name}" "$src_dir"
 
     # Stop → replace → start
     for rt in "${runtimes_to_update[@]}"; do
@@ -1696,7 +1696,7 @@ cmd_update() {
         print_ok "Compose updated"
     fi
 
-    # Update contup.sh itself
+    # Update dockpod.sh itself
     install_self "$src_dir"
 
     # Verify
@@ -1752,7 +1752,7 @@ cmd_switch() {
     local target="${1:-}"
 
     if [[ -z "$target" ]]; then
-        die "Usage: contup switch <docker|podman>"
+        die "Usage: dockpod switch <docker|podman>"
     fi
 
     detect_install_mode
@@ -1795,7 +1795,7 @@ cmd_switch() {
     esac
 
     echo ""
-    if [[ -n "${CONTUP_WRAPPER:-}" ]]; then
+    if [[ -n "${DOCKPOD_WRAPPER:-}" ]]; then
         print_box "${S_OK} Switched to ${target^}" \
             "DOCKER_HOST=${socket}"
     else
@@ -1850,7 +1850,7 @@ cmd_test() {
         fi
 
         # Test 2: alpine echo
-        if err=$($cmd run --rm alpine echo "contup test ok" 2>&1); then
+        if err=$($cmd run --rm alpine echo "dockpod test ok" 2>&1); then
             print_ok "alpine echo"
             ((pass++)) || true
         else
@@ -1885,7 +1885,7 @@ cmd_test() {
 
         if [[ -n "$compose_cmd" ]]; then
             local tmpdir
-            tmpdir=$(mktemp -d /tmp/contup-test.XXXXXX)
+            tmpdir=$(mktemp -d /tmp/dockpod-test.XXXXXX)
             cat > "${tmpdir}/compose.yml" <<'COMPOSEYML'
 services:
   web:
@@ -1921,10 +1921,10 @@ COMPOSEYML
     # Summary
     echo ""
     if [[ $total_fail -eq 0 ]]; then
-        print_box "contup — test results" \
+        print_box "dockpod — test results" \
             "${total_pass}/$((total_pass + total_fail)) passed ${S_OK}"
     else
-        print_box "contup — test results" \
+        print_box "dockpod — test results" \
             "${total_pass}/$((total_pass + total_fail)) passed, ${total_fail} failed ${S_FAIL}"
         return 1
     fi
@@ -1986,9 +1986,9 @@ cmd_status() {
     fi
     lines+=("Mode:      ${INSTALL_MODE}")
     lines+=("Socket:    ${DOCKER_HOST:-none}")
-    lines+=("contup:    v${CONTUP_VERSION}")
+    lines+=("dockpod:    v${DOCKPOD_VERSION}")
 
-    print_box "contup — status" "${lines[@]}"
+    print_box "dockpod — status" "${lines[@]}"
 }
 
 cmd_info() {
@@ -2110,14 +2110,14 @@ cmd_info() {
         lines+=("Active:         ${active^}  ◀")
     fi
     lines+=("DOCKER_HOST:    ${DOCKER_HOST:-not set}")
-    lines+=("contup:         v${CONTUP_VERSION}")
+    lines+=("dockpod:         v${DOCKPOD_VERSION}")
 
-    print_box "contup — info" "${lines[@]}"
+    print_box "dockpod — info" "${lines[@]}"
 }
 
 cmd_help() {
     print_banner
-    echo "Usage: contup <command> [runtime] [flags]"
+    echo "Usage: dockpod <command> [runtime] [flags]"
     echo ""
     echo "Commands:"
     echo "  install   [docker|podman|both]    Install container runtime"
@@ -2139,13 +2139,13 @@ cmd_help() {
     echo "  --no-verify      Skip verification after install/update"
     echo ""
     echo "Examples:"
-    echo "  contup install docker         Install Docker with Compose"
-    echo "  contup install podman -y      Install Podman non-interactively"
-    echo "  contup switch podman          Switch DOCKER_HOST to Podman"
-    echo "  contup update                 Update all installed runtimes"
-    echo "  contup test                   Test all installed runtimes"
-    echo "  contup status                 Show current status"
-    echo "  contup info                   Show detailed system info"
+    echo "  dockpod install docker         Install Docker with Compose"
+    echo "  dockpod install podman -y      Install Podman non-interactively"
+    echo "  dockpod switch podman          Switch DOCKER_HOST to Podman"
+    echo "  dockpod update                 Update all installed runtimes"
+    echo "  dockpod test                   Test all installed runtimes"
+    echo "  dockpod status                 Show current status"
+    echo "  dockpod info                   Show detailed system info"
 }
 
 ## Entry point
@@ -2160,7 +2160,7 @@ parse_args() {
             --no-start)     FLAG_NO_START=true ;;
             --no-verify)    FLAG_NO_VERIFY=true ;;
             -h|--help)      command="help" ;;
-            -v|--version)   echo "contup v${CONTUP_VERSION}"; exit 0 ;;
+            -v|--version)   echo "dockpod v${DOCKPOD_VERSION}"; exit 0 ;;
             -*)             die "Unknown flag: $1" ;;
             *)              args+=("$1") ;;
         esac
@@ -2174,7 +2174,7 @@ parse_args() {
         runtime="${args[1]}"
     fi
 
-    # Default: if piped (curl | bash), install contup CLI only
+    # Default: if piped (curl | bash), install dockpod CLI only
     if [[ -z "$command" ]]; then
         if [[ ! -t 0 ]]; then
             command="setup"
@@ -2201,7 +2201,7 @@ parse_args() {
         status)     cmd_status ;;
         info)       cmd_info ;;
         help)       cmd_help ;;
-        *)          die "Unknown command: ${command}. Run 'contup help' for usage." ;;
+        *)          die "Unknown command: ${command}. Run 'dockpod help' for usage." ;;
     esac
 }
 

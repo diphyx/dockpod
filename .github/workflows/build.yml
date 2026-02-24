@@ -104,7 +104,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: contup-${{ matrix.arch }}
+          name: dockpod-${{ matrix.arch }}
           path: |
             ${{ env.TARBALL }}
             ${{ env.CHECKSUM }}

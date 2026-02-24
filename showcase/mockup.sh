@@ -7,7 +7,7 @@
 # Usage: ./mockup.sh
 #
 # Output:
-#   setup.gif     — install contup CLI
+#   setup.gif     — install dockpod CLI
 #   install.gif   — install docker runtime
 #
 
@@ -111,24 +111,24 @@ record_demo() {
 run_setup() {
     echo -ne "$PROMPT"
     sleep 0.5
-    type_cmd "curl -fsSL diphyx.github.io/contup/setup.sh | bash"; enter
+    type_cmd "curl -fsSL diphyx.github.io/dockpod/setup.sh | bash"; enter
     sleep 0.3
 
-    echo -e "\n${BOLD}  contup — container up${NC}"
+    echo -e "\n${BOLD}  dockpod — docker + podman, quick setup${NC}"
     echo ""
     sleep 0.3
 
-    echo -e "  ${GREEN}${S_OK}${NC}  Installed contup to /home/user/.local/bin"
+    echo -e "  ${GREEN}${S_OK}${NC}  Installed dockpod to /home/user/.local/bin"
     sleep 0.2
     echo -e "  ${GREEN}${S_OK}${NC}  Added /home/user/.local/bin to PATH"
     sleep 0.2
-    echo -e "  ${GREEN}${S_OK}${NC}  Installed contup shell wrapper"
+    echo -e "  ${GREEN}${S_OK}${NC}  Installed dockpod shell wrapper"
     sleep 0.3
 
     echo ""
-    echo -e "  ${BOLD}${S_OK} contup CLI installed${NC}"
+    echo -e "  ${BOLD}${S_OK} dockpod CLI installed${NC}"
     echo ""
-    echo -e "  Next: ${BOLD}contup install${NC} <docker|podman>"
+    echo -e "  Next: ${BOLD}dockpod install${NC} <docker|podman>"
     echo ""
     sleep 0.1
 }
@@ -136,7 +136,7 @@ run_setup() {
 run_install() {
     echo -ne "$PROMPT"
     sleep 0.5
-    type_cmd "contup install docker -y"; enter
+    type_cmd "dockpod install docker -y"; enter
     sleep 0.3
 
     # Step 1 — System Check
@@ -178,7 +178,7 @@ run_install() {
     sleep 0.3
 
     echo ""
-    echo -e "  ${BOLD}${S_OK} contup — install complete${NC}"
+    echo -e "  ${BOLD}${S_OK} dockpod — install complete${NC}"
     echo ""
     sleep 0.1
 }

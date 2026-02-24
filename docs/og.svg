@@ -34,7 +34,7 @@
   <rect x="0" y="0" width="1200" height="3" fill="url(#accent)" opacity="0.7"/>
 
   <!-- Title -->
-  <text x="600" y="195" font-family="system-ui,-apple-system,sans-serif" font-size="96" font-weight="800" fill="url(#titleGrad)" text-anchor="middle">contup</text>
+  <text x="600" y="195" font-family="system-ui,-apple-system,sans-serif" font-size="96" font-weight="800" fill="url(#titleGrad)" text-anchor="middle">dockpod</text>
 
   <!-- Subtitle -->
   <text x="600" y="250" font-family="system-ui,-apple-system,sans-serif" font-size="26" fill="#a1a1aa" text-anchor="middle" font-weight="400">Prebuilt container runtime binaries for Linux</text>
@@ -95,7 +95,7 @@
   </g>
 
   <!-- GitHub -->
-  <text x="600" y="575" font-family="system-ui,-apple-system,sans-serif" font-size="14" fill="#52525b" text-anchor="middle">github.com/diphyx/contup</text>
+  <text x="600" y="575" font-family="system-ui,-apple-system,sans-serif" font-size="14" fill="#52525b" text-anchor="middle">github.com/diphyx/dockpod</text>
 
   <!-- Bottom accent line -->
   <rect x="0" y="627" width="1200" height="3" fill="url(#accent)" opacity="0.7"/>

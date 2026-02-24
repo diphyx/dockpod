@@ -68,7 +68,7 @@ The build pipeline is fully automated via GitHub Actions with three workflows:
 Build                          Verify                    Release
  ├─ Load versions              ├─ Download artifact      ├─ Download artifacts
  ├─ Setup Go + Rust            ├─ Find tarball            ├─ Create checksums
- ├─ Build binaries             └─ Verify contup           └─ Create GitHub release
+ ├─ Build binaries             └─ Verify dockpod           └─ Create GitHub release
  ├─ Test binaries (amd64)          ├─ install
  ├─ Bundle tarball                 ├─ test
  └─ Upload artifact                ├─ status / info
